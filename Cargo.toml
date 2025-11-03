@@ -1,5 +1,5 @@
 [package]
-name = "alpaca-trade-api-rust"
+name = "alpaca_trade_api_rust"
 version = "0.1.0"
 edition = "2024"
 

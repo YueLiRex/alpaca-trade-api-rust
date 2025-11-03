@@ -1,56 +1,88 @@
+extern crate alpaca_trade_api_rust;
 #[cfg(test)]
 mod tests {
-    use alpaca_trade_api_rust::prelude::*;
-    use httpmock::Method::GET;
-    use httpmock::MockServer;
+  use alpaca_trade_api_rust::api;
+  use httpmock::{
+    Method::GET,
+    MockServer,
+  };
 
-    #[tokio::test]
-    async fn test_get_account() {
-        // Start a mock server
-        let server = MockServer::start();
+  #[tokio::test]
+  async fn test_get_account() {
+    // Start a mock server
+    let server = MockServer::start();
 
-        println!("{}", server.address());
+    // Create a mock for the /v2/account endpoint
+    let account_mock = server.mock(|when, then| {
+      when
+        .method(GET)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .header("APCA-API-KEY-ID", "test_key")
+        .header("APCA-API-SECRET-KEY", "test_secret")
+        .path("/v2/account");
+      then
+        .status(200)
+        .header("Content-Type", "application/json")
+        .body(
+          r#"{
+            "id": "fff0e281-2a5a-4b97-8dcc-790a439a49b2",
+            "admin_configurations": {},
+            "user_configurations": null,
+            "account_number": "PA39J45DA4AZ",
+            "status": "ACTIVE",
+            "crypto_status": "ACTIVE",
+            "options_approved_level": 3,
+            "options_trading_level": 3,
+            "currency": "USD",
+            "buying_power": "200000",
+            "regt_buying_power": "200000",
+            "daytrading_buying_power": "0",
+            "effective_buying_power": "200000",
+            "non_marginable_buying_power": "100000",
+            "options_buying_power": "100000",
+            "bod_dtbp": "0",
+            "cash": "100000",
+            "accrued_fees": "0",
+            "portfolio_value": "100000",
+            "pattern_day_trader": false,
+            "trading_blocked": false,
+            "transfers_blocked": false,
+            "account_blocked": false,
+            "created_at": "2024-10-31T15:46:03.666425Z",
+            "trade_suspended_by_user": false,
+            "multiplier": "2",
+            "shorting_enabled": true,
+            "equity": "100000",
+            "last_equity": "100000",
+            "long_market_value": "0",
+            "short_market_value": "0",
+            "position_market_value": "0",
+            "initial_margin": "0",
+            "maintenance_margin": "0",
+            "last_maintenance_margin": "0",
+            "sma": "100000",
+            "daytrade_count": 0,
+            "balance_asof": "2025-10-31",
+            "crypto_tier": 1,
+            "intraday_adjustments": "0",
+            "pending_reg_taf_fees": "0"
+          }"#,
+        );
+    });
 
-        // Create a mock for the /v2/account endpoint
-        let account_mock = server.mock(|when, then| {
-            when.method(GET).path("/v2/account");
-            then.status(200)
-                .header("Content-Type", "application/json")
-                .body(
-                    r#"{
-                    "id": "123e4567-e89b-12d3-a456-426614174000",
-                    "status": "ACTIVE",
-                    "currency": "USD",
-                    "cash": 10000.0,
-                    "portfolio_value": 15000.0,
-                    "buying_power": 30000.0,
-                    "daytrading_buying_power": 60000.0,
-                    "effective_buying_power": 30000.0,
-                    "options_buying_power": 0.0,
-                    "options_approved_level": 1,
-                    "options_trading_level": 1,
-                    "non_marginable_buying_power": 10000.0,
-                    "bod_dtbp": 0.0,
-                    "regt_buying_power": 30000.0,
-                    "shorting_enabled": false,
-                    "trade_suspended_by_user": false,
-                    "account_blocked": false,
-                    "created_at": "2023-01-01T00:00:00Z",
-                    "trade_account_type": "individual",
-                    "pattern_day_trader_status": false,
-                    "multiplier": 2.0,
-                    "equity": 15000.0,
-                    "last_equity": 14500.0,
-                    "long_market_value": 8000.0,
-                    "short_market_value": 0.0,
-                    "initial_margin": 4000.0,
-                    "maintenance_margin": 3000.0,
-                    "sma": 5000.0,
-                    "daytrade_count": 0,
-                    "non_equity_margin_requirement": 0.0,
-                    "cash_withdrawable": 5000.0
-                }"#,
-                );
-        });
+    let base_url = server.base_url();
+    let api = api::Api::new(base_url, "test_key".to_string(), "test_secret".to_string());
+    match api.get_account().await {
+      Ok(account) => {
+        assert_eq!(
+          account.id.to_string(),
+          "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
+        );
+        assert_eq!(account.cash.value(), 100000.0);
+        assert_eq!(account.portfolio_value.value(), 100000.0);
+      }
+      Err(e) => panic!("API call failed: {:?}", e),
     }
+  }
 }
