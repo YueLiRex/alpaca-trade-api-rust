@@ -1,7 +1,45 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize)]
+pub enum OptionContractsStatus {
+    Active,
+    Inactive,
+}
+
+impl Default for OptionContractsStatus {
+    fn default() -> Self {
+        Self::Active
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
-pub enum Status {
+pub enum OptionType {
+    Call,
+    Put,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OptionStyle {
+    American,
+    European,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum DeliverableType {
+    Cash,
+    Equity,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum DeliverableSettlementMethod {
+    BTOB,
+    CADF,
+    CAFX,
+    CCC,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum AccountStatus {
     ONBOARDING,
     SUBMISSION_FAILED,
     SUBMITTED,

@@ -37,9 +37,13 @@ mod tests {
             until: None,
             direction: OrdersDirection::DESC,
             nested: Some(true),
-            symbols: ComaSeparatedStrings { values: vec!["AAPL", "TSLA"] },
+            symbols: ComaSeparatedStrings {
+                values: vec!["AAPL", "TSLA"],
+            },
             side: None,
-            asset_class: ComaSeparatedStrings { values: vec!["us_option", "crypto"] },
+            asset_class: ComaSeparatedStrings {
+                values: vec!["us_option", "crypto"],
+            },
             before_order_id: None,
             after_order_id: None,
         };

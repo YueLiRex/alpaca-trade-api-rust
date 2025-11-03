@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use httpmock::MockServer;
-    use httpmock::Method::GET;
     use alpaca_trade_api_rust::prelude::*;
+    use httpmock::Method::GET;
+    use httpmock::MockServer;
 
     #[tokio::test]
     async fn test_get_account() {
@@ -13,11 +13,11 @@ mod tests {
 
         // Create a mock for the /v2/account endpoint
         let account_mock = server.mock(|when, then| {
-            when.method(GET)
-                .path("/v2/account");
+            when.method(GET).path("/v2/account");
             then.status(200)
                 .header("Content-Type", "application/json")
-                .body(r#"{
+                .body(
+                    r#"{
                     "id": "123e4567-e89b-12d3-a456-426614174000",
                     "status": "ACTIVE",
                     "currency": "USD",
@@ -49,7 +49,8 @@ mod tests {
                     "daytrade_count": 0,
                     "non_equity_margin_requirement": 0.0,
                     "cash_withdrawable": 5000.0
-                }"#);
+                }"#,
+                );
         });
-  }
+    }
 }
