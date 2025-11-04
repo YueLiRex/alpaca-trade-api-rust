@@ -74,6 +74,7 @@ pub enum Exchange {
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Class {
   US_EQUITY,
+  US_OPTION,
   CRYPTO,
 }
 
@@ -178,4 +179,10 @@ pub enum PositionIntent {
   OPENING,
   CLOSING,
   UNKNOWN,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PositionSide {
+  Long,
+  Short,
 }

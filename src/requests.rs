@@ -7,7 +7,11 @@ use crate::enums::{
   TimeInForce,
   Type,
 };
-use chrono::NaiveDate;
+use chrono::{
+  DateTime,
+  NaiveDate,
+  Utc,
+};
 use serde::Serialize;
 
 #[derive(Debug)]
@@ -174,4 +178,58 @@ pub struct OrdersQueryParameter {
   pub before_order_id: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub after_order_id: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub enum HistoryPeriod {
+  Day(u32),
+  Week(u32),
+  Month(u32),
+  Year(u32),
+}
+
+#[derive(Debug, Serialize)]
+pub enum HistoryTimeFrame {
+  Minute(u32),
+  Hour(u32),
+  Day(u32),
+}
+
+#[derive(Debug, Serialize)]
+pub enum IntradayReporting {
+  market_hours,
+  extended_hours,
+  continuous,
+}
+
+#[derive(Debug, Serialize)]
+pub enum PnlReset {
+  NoReset,
+  PerDay,
+}
+
+#[derive(Debug, Serialize)]
+pub enum CashflowTypes {
+  All,
+  None,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PortfolioHistoryQueryParameter {
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub period: Option<HistoryPeriod>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub timeframe: Option<HistoryTimeFrame>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub intraday_reporting: Option<IntradayReporting>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub start: Option<DateTime<Utc>>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub pnl_reset: Option<PnlReset>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub end: Option<DateTime<Utc>>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub extended_hours: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub cashflow_types: Option<CashflowTypes>,
 }

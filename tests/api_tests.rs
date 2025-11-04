@@ -1,7 +1,7 @@
 extern crate alpaca_trade_api_rust;
 #[cfg(test)]
 mod tests {
-  use alpaca_trade_api_rust::api;
+  use alpaca_trade_api_rust::{api::AccountApi, client::Client};
   use httpmock::{
     Method::GET,
     MockServer,
@@ -72,9 +72,10 @@ mod tests {
     });
 
     let base_url = server.base_url();
-    let api = api::Api::new(base_url, "test_key".to_string(), "test_secret".to_string());
+    let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
     match api.get_account().await {
       Ok(account) => {
+        account_mock.assert();
         assert_eq!(
           account.id.to_string(),
           "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
