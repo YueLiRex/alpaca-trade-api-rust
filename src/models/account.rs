@@ -1,6 +1,6 @@
-use crate::{
-  enums::*,
-  models::utils::{
+use crate::models::{
+  enums::Currency,
+  utils::{
     Money,
     deserialize_str_to_u8,
   },
@@ -12,15 +12,7 @@ use chrono::{
 };
 use serde::{
   Deserialize,
-  Deserializer,
   Serialize,
-  de::Visitor,
-};
-use std::{
-  collections::HashMap,
-  str::{
-    self,
-  },
 };
 use uuid::Uuid;
 
@@ -71,4 +63,16 @@ pub struct Account {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub pending_transfer_out: Option<Money>,
   pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum AccountStatus {
+  Onboarding,
+  SubmissionFailed,
+  Submitted,
+  AccountUpdated,
+  ApprovalPending,
+  Active,
+  Rejected,
 }

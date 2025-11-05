@@ -1,7 +1,3 @@
-use anyhow::{
-  Ok,
-  anyhow,
-};
 use reqwest_middleware::ClientWithMiddleware;
 
 pub struct Client {

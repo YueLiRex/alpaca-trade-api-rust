@@ -1,10 +1,9 @@
-use crate::{
-  enums::*,
-  models::utils::Money,
-};
-use chrono::{
-  DateTime,
-  Utc,
+use crate::models::{
+  enums::{
+    AssetClass,
+    Exchange,
+  },
+  utils::Money,
 };
 use serde::{
   Deserialize,
@@ -17,7 +16,7 @@ pub struct Position {
   pub asset_id: Uuid,
   pub symbol: String,
   pub exchange: Exchange,
-  pub asset_class: Class,
+  pub asset_class: AssetClass,
   pub avg_entry_price: Money,
   pub qty: f64,
   pub qty_available: f64,
@@ -32,4 +31,10 @@ pub struct Position {
   pub lastday_price: Money,
   pub change_today: f64,
   pub asset_marginable: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PositionSide {
+  Long,
+  Short,
 }

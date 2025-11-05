@@ -1,4 +1,8 @@
-use crate::enums::*;
+use crate::models::enums::{
+  AssetClass,
+  Side,
+  Type,
+};
 use chrono::{
   DateTime,
   Utc,
@@ -25,7 +29,7 @@ pub struct Order {
   pub replaces: Option<Uuid>,
   pub asset_id: Uuid,
   pub symbol: String,
-  pub asset_class: Class,
+  pub asset_class: AssetClass,
   pub national: Option<String>,
   pub qty: Option<String>,
   pub filled_qty: Option<String>,
@@ -43,4 +47,63 @@ pub struct Order {
   pub trail_percent: Option<String>,
   pub hwm: Option<String>,
   pub position_intent: PositionIntent,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OrderStatus {
+  New,
+  PartiallyFilled,
+  Filled,
+  DoneForDay,
+  Canceled,
+  Expired,
+  Replaced,
+  PendingCancel,
+  Stopped,
+  Rejected,
+  Suspended,
+  PendingNew,
+  Calculated,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OrderClass {
+  Simple,
+  Oco,
+  Trigger,
+  Bracket,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum TimeInForce {
+  DAY,
+  GTC,
+  OPG,
+  CLS,
+  IOC,
+  FOK,
+}
+
+impl Serialize for TimeInForce {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    let s = match *self {
+      TimeInForce::DAY => "day",
+      TimeInForce::GTC => "gtc",
+      TimeInForce::OPG => "opg",
+      TimeInForce::CLS => "cls",
+      TimeInForce::IOC => "ioc",
+      TimeInForce::FOK => "fok",
+    };
+    serializer.serialize_str(s)
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum PositionIntent {
+  Opening,
+  Closing,
+  Unknown,
 }

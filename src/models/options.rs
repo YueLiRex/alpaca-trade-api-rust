@@ -1,20 +1,7 @@
-use crate::enums::*;
-use chrono::{
-  DateTime,
-  NaiveDate,
-  Utc,
-};
+use chrono::NaiveDate;
 use serde::{
   Deserialize,
-  Deserializer,
   Serialize,
-  de::Visitor,
-};
-use std::{
-  collections::HashMap,
-  str::{
-    self,
-  },
 };
 use uuid::Uuid;
 
@@ -57,4 +44,30 @@ pub struct OptionContract {
   #[serde(skip_serializing_if = "Option::is_none")]
   close_price_date: Option<NaiveDate>,
   deliverables: Vec<Deliverable>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OptionType {
+  Call,
+  Put,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum OptionStyle {
+  American,
+  European,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum DeliverableType {
+  Cash,
+  Equity,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum DeliverableSettlementMethod {
+  BTOB,
+  CADF,
+  CAFX,
+  CCC,
 }

@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub trait AccountApi {
-  async fn get_account(&self) -> anyhow::Result<Account>;
+  fn get_account(&self) -> impl Future<Output = anyhow::Result<Account>>;
 }
 
 impl AccountApi for Client {

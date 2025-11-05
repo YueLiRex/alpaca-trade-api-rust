@@ -5,6 +5,7 @@ mod option_api;
 mod order_api;
 mod portfolio_api;
 mod position_api;
+mod utils;
 
 pub use account_api::*;
 pub use assets_api::*;
@@ -13,3 +14,4 @@ pub use option_api::*;
 pub use order_api::*;
 pub use portfolio_api::*;
 pub use position_api::*;
+pub use utils::*;

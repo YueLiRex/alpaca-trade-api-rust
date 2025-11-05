@@ -1,7 +1,10 @@
 extern crate alpaca_trade_api_rust;
 #[cfg(test)]
 mod tests {
-  use alpaca_trade_api_rust::{api::AccountApi, client::Client};
+  use alpaca_trade_api_rust::{
+    api::AccountApi,
+    client::Client,
+  };
   use httpmock::{
     Method::GET,
     MockServer,

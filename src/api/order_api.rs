@@ -1,26 +1,40 @@
 use crate::{
+  api::utils::{
+    ComaSeparatedStrings,
+    DefaultBoolean,
+  },
   client::Client,
-  models::Order,
-  requests::OrdersQueryParameter,
+  models::{
+    Order,
+    TimeInForce,
+    enums::{
+      Side,
+      Type,
+    },
+  },
 };
 use anyhow::anyhow;
+use serde::Serialize;
 
 pub trait OrderApi {
-  async fn create_order(&self, order: &Order) -> anyhow::Result<Order>;
+  fn create_order(&self, order: &Order) -> impl Future<Output = anyhow::Result<Order>>;
 
-  async fn get_all_orders(
+  fn get_all_orders(
     &self,
     query_parameter: &OrdersQueryParameter,
-  ) -> anyhow::Result<Vec<Order>>;
+  ) -> impl Future<Output = anyhow::Result<Vec<Order>>>;
 
-  async fn delete_all_orders(&self) -> anyhow::Result<()>;
+  fn delete_all_orders(&self) -> impl Future<Output = anyhow::Result<()>>;
 
-  async fn get_order_by_id(&self, order_id: uuid::Uuid) -> anyhow::Result<Order>;
+  fn get_order_by_id(&self, order_id: uuid::Uuid) -> impl Future<Output = anyhow::Result<Order>>;
 
-  async fn replace_order_by_id(&self, order_id: uuid::Uuid, order: &Order)
-  -> anyhow::Result<Order>;
+  fn replace_order_by_id(
+    &self,
+    order_id: uuid::Uuid,
+    order: &Order,
+  ) -> impl Future<Output = anyhow::Result<Order>>;
 
-  async fn delete_order_by_id(&self, order_id: uuid::Uuid) -> anyhow::Result<()>;
+  fn delete_order_by_id(&self, order_id: uuid::Uuid) -> impl Future<Output = anyhow::Result<()>>;
 }
 
 impl OrderApi for Client {
@@ -108,4 +122,66 @@ impl OrderApi for Client {
       _ => Ok(()),
     }
   }
+}
+
+#[derive(Debug, Serialize)]
+pub struct OrderRequest {
+  pub symbol: String,
+  pub qty: u16,
+  pub side: Side,
+  #[serde(rename = "type")]
+  pub _type: Type,
+  pub time_in_force: TimeInForce,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub limit_price: Option<f64>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub stop_price: Option<f64>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub trail_price: Option<f64>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub trail_percent: Option<f64>,
+  pub extended_hours: DefaultBoolean,
+}
+
+#[derive(Debug, Serialize)]
+pub struct OrdersQueryParameter {
+  pub status: OrderStatus,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub limit: Option<u16>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub after: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub until: Option<String>,
+  pub direction: OrdersDirection,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub nested: Option<bool>,
+  pub symbols: ComaSeparatedStrings,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub side: Option<String>,
+  pub asset_class: ComaSeparatedStrings,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub before_order_id: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub after_order_id: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub enum OrderStatus {
+  Open,
+  Closed,
+  All,
+}
+
+#[derive(Debug, Serialize)]
+pub enum OrdersDirection {
+  Asc,
+  Desc,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all="snake_case")]
+pub enum OrderAssetClass {
+  UsEquity,
+  UsOption,
+  Crypto,
 }

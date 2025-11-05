@@ -1,7 +1,7 @@
-use crate::enums::{
-  AccountStatus,
-  Class,
+use crate::models::enums::{
+  AssetClass,
   Exchange,
+  Status,
 };
 use serde::{
   Deserialize,
@@ -12,11 +12,11 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Asset {
   pub id: Uuid,
-  pub class: Class,
+  pub class: AssetClass,
   pub exchange: Exchange,
   pub symbol: String,
   pub name: String,
-  pub status: AccountStatus,
+  pub status: Status,
   pub tradable: bool,
   pub marginable: bool,
   pub maintenance_margin_requirement: u16,

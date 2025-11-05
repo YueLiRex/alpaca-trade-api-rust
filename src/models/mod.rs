@@ -1,6 +1,7 @@
 mod account;
 mod assets;
 mod corporate_action;
+pub mod enums;
 mod options;
 mod orders;
 mod position;

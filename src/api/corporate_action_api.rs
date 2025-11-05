@@ -1,16 +1,21 @@
 use crate::{
+  api::utils::ComaSeparatedStrings,
   client::Client,
   models::CorporateAction,
-  requests::CorporateActionsQueryParameter,
 };
+use chrono::NaiveDate;
+use serde::Serialize;
 
 pub trait CorporateActionApi {
-  async fn get_specific_corporate_actions(&self, id: &str) -> anyhow::Result<Vec<CorporateAction>>;
+  fn get_specific_corporate_actions(
+    &self,
+    id: &str,
+  ) -> impl Future<Output = anyhow::Result<Vec<CorporateAction>>>;
 
-  async fn get_corporate_actions(
+  fn get_corporate_actions(
     &self,
     query_parameter: &CorporateActionsQueryParameter,
-  ) -> anyhow::Result<Vec<CorporateAction>>;
+  ) -> impl Future<Output = anyhow::Result<Vec<CorporateAction>>>;
 }
 
 impl CorporateActionApi for Client {
@@ -41,4 +46,22 @@ impl CorporateActionApi for Client {
       .await?;
     Ok(resp)
   }
+}
+
+#[derive(Debug, Serialize)]
+pub enum CorporateActionsDateType {
+  DeclarationDate,
+  ExDate,
+  RecordDate,
+  PayableDate,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CorporateActionsQueryParameter {
+  ca_types: ComaSeparatedStrings,
+  since: NaiveDate,
+  until: NaiveDate,
+  symbols: Option<String>,
+  cusip: Option<String>,
+  date_type: Option<CorporateActionsDateType>,
 }

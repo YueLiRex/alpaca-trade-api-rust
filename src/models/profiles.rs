@@ -1,15 +1,10 @@
 use crate::models::utils::Money;
-use chrono::{
-  DateTime,
-  NaiveDate,
-  Utc,
-};
+use chrono::NaiveDate;
 use serde::{
   Deserialize,
   Serialize,
 };
 use std::collections::HashMap;
-use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PortfolioHistory {
