@@ -16,6 +16,7 @@ impl Default for Status {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AssetClass {
   UsEquity,
   UsOption,

@@ -1,34 +1,33 @@
 extern crate alpaca_trade_api_rust;
-#[cfg(test)]
-mod tests {
-  use alpaca_trade_api_rust::{
-    api::AccountApi,
-    client::Client,
-  };
-  use httpmock::{
-    Method::GET,
-    MockServer,
-  };
 
-  #[tokio::test]
-  async fn test_get_account() {
-    // Start a mock server
-    let server = MockServer::start();
+use alpaca_trade_api_rust::{
+  api::AccountApi,
+  client::Client,
+};
+use httpmock::{
+  Method::GET,
+  MockServer,
+};
 
-    // Create a mock for the /v2/account endpoint
-    let account_mock = server.mock(|when, then| {
-      when
-        .method(GET)
-        .header("Content-Type", "application/json")
-        .header("Accept", "application/json")
-        .header("APCA-API-KEY-ID", "test_key")
-        .header("APCA-API-SECRET-KEY", "test_secret")
-        .path("/v2/account");
-      then
-        .status(200)
-        .header("Content-Type", "application/json")
-        .body(
-          r#"{
+#[tokio::test]
+async fn test_get_account() {
+  // Start a mock server
+  let server = MockServer::start();
+
+  // Create a mock for the /v2/account endpoint
+  let account_mock = server.mock(|when, then| {
+    when
+      .method(GET)
+      .header("Content-Type", "application/json")
+      .header("Accept", "application/json")
+      .header("APCA-API-KEY-ID", "test_key")
+      .header("APCA-API-SECRET-KEY", "test_secret")
+      .path("/v2/account");
+    then
+      .status(200)
+      .header("Content-Type", "application/json")
+      .body(
+        r#"{
             "id": "fff0e281-2a5a-4b97-8dcc-790a439a49b2",
             "admin_configurations": {},
             "user_configurations": null,
@@ -71,22 +70,21 @@ mod tests {
             "intraday_adjustments": "0",
             "pending_reg_taf_fees": "0"
           }"#,
-        );
-    });
+      );
+  });
 
-    let base_url = server.base_url();
-    let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-    match api.get_account().await {
-      Ok(account) => {
-        account_mock.assert();
-        assert_eq!(
-          account.id.to_string(),
-          "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
-        );
-        assert_eq!(account.cash.value(), 100000.0);
-        assert_eq!(account.portfolio_value.value(), 100000.0);
-      }
-      Err(e) => panic!("API call failed: {:?}", e),
+  let base_url = server.base_url();
+  let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
+  match api.get_account().await {
+    Ok(account) => {
+      account_mock.assert();
+      assert_eq!(
+        account.id.to_string(),
+        "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
+      );
+      assert_eq!(account.cash.value(), 100000.0);
+      assert_eq!(account.portfolio_value.value(), 100000.0);
     }
+    Err(e) => panic!("API call failed: {:?}", e),
   }
 }

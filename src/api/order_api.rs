@@ -179,9 +179,75 @@ pub enum OrdersDirection {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all="snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum OrderAssetClass {
   UsEquity,
   UsOption,
   Crypto,
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::{
+    api::OrderRequest,
+    models::{
+      TimeInForce,
+      enums::{
+        Side,
+        Type,
+      },
+    },
+  };
+
+  #[test]
+  fn order_request_serialization_test() {
+    use serde_json;
+
+    let order_request = OrderRequest {
+      symbol: "AAPL".to_string(),
+      qty: 10,
+      side: Side::Buy,
+      _type: Type::Limit,
+      time_in_force: TimeInForce::GTC,
+      limit_price: Some(150.0),
+      stop_price: Some(3.54),
+      trail_price: None,
+      trail_percent: None,
+      extended_hours: Default::default(),
+    };
+
+    let serialized = serde_json::to_string(&order_request).unwrap();
+
+    let expected = r#"{"symbol":"AAPL","qty":10,"side":"buy","type":"limit","time_in_force":"gtc","limit_price":150.0,"stop_price":3.54,"extended_hours":false}"#;
+    assert_eq!(serialized, expected);
+  }
+
+  #[test]
+  fn orders_parameter_serialization_test() {
+    use crate::api::*;
+    use serde_json;
+
+    let orders_query = OrdersQueryParameter {
+      status: OrderStatus::Open,
+      limit: Some(50),
+      after: None,
+      until: None,
+      direction: OrdersDirection::Desc,
+      nested: Some(true),
+      symbols: ComaSeparatedStrings {
+        values: vec!["AAPL", "TSLA"],
+      },
+      side: None,
+      asset_class: ComaSeparatedStrings {
+        values: vec!["us_option", "crypto"],
+      },
+      before_order_id: None,
+      after_order_id: None,
+    };
+
+    let serialized = serde_json::to_string(&orders_query).unwrap();
+
+    let expected = r#"{"status":"Open","limit":50,"direction":"Desc","nested":true,"symbols":"AAPL,TSLA","asset_class":"us_option,crypto"}"#;
+    assert_eq!(serialized, expected);
+  }
 }

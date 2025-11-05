@@ -6,7 +6,7 @@ use crate::{
   client::Client,
   models::{
     Asset,
-    enums::Exchange,
+    enums::{AssetClass, Exchange},
   },
 };
 use serde::Serialize;
@@ -54,7 +54,30 @@ impl AssetsApi for Client {
 pub struct AssetsQueryParameter {
   pub status: AssetsStatus,
   #[serde(skip_serializing_if = "Option::is_none")]
-  pub asset_class: Option<String>,
-  pub exchange: Exchange,
-  pub attributes: ComaSeparatedStrings,
+  pub asset_class: Option<AssetClass>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub exchange: Option<Exchange>,
+  pub attributes: Option<ComaSeparatedStrings>,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{api::{AssetsQueryParameter, ComaSeparatedStrings, AssetsStatus}, models::enums::{AssetClass, Exchange}};
+
+
+  #[test]
+  fn asset_query_parameter_serialization_test() {
+    use serde_json;
+
+    let parameter = AssetsQueryParameter{
+      status: AssetsStatus::Active,
+      asset_class: Some(AssetClass::UsEquity),
+      exchange: Some(Exchange::NASDAQ),
+      attributes: Some(ComaSeparatedStrings{ values: vec!["has_options", "ipo", "ptp_no_exception"]})
+    };
+
+    let serialized = serde_json::to_string(&parameter).unwrap();
+    let expected = r#"{"status":"Active","asset_class":"us_equity","exchange":"NASDAQ","attributes":"has_options,ipo,ptp_no_exception"}"#;
+    assert_eq!(serialized, expected)
+  }
 }
