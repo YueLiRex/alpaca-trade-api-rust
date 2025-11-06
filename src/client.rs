@@ -1,5 +1,18 @@
 use reqwest_middleware::ClientWithMiddleware;
 
+///
+///Create client from base_url, api_key and api_secret
+///
+/// ```
+/// use alpaca_trade_api_rust::client::Client;
+///
+/// let client = Client::new(
+///   "localhost:8080".to_string(),
+///   "testApiKey".to_string(),
+///   "testApiSecretKey".to_string(),
+/// );
+/// assert_eq!(client.base_url, "localhost:8080");
+/// ```
 pub struct Client {
   pub base_url: String,
   pub client: ClientWithMiddleware,

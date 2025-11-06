@@ -6,7 +6,10 @@ use crate::{
   client::Client,
   models::{
     Asset,
-    enums::{AssetClass, Exchange},
+    enums::{
+      AssetClass,
+      Exchange,
+    },
   },
 };
 use serde::Serialize;
@@ -62,18 +65,29 @@ pub struct AssetsQueryParameter {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api::{AssetsQueryParameter, ComaSeparatedStrings, AssetsStatus}, models::enums::{AssetClass, Exchange}};
-
+  use crate::{
+    api::{
+      AssetsQueryParameter,
+      AssetsStatus,
+      ComaSeparatedStrings,
+    },
+    models::enums::{
+      AssetClass,
+      Exchange,
+    },
+  };
 
   #[test]
   fn asset_query_parameter_serialization_test() {
     use serde_json;
 
-    let parameter = AssetsQueryParameter{
+    let parameter = AssetsQueryParameter {
       status: AssetsStatus::Active,
       asset_class: Some(AssetClass::UsEquity),
       exchange: Some(Exchange::NASDAQ),
-      attributes: Some(ComaSeparatedStrings{ values: vec!["has_options", "ipo", "ptp_no_exception"]})
+      attributes: Some(ComaSeparatedStrings {
+        values: vec!["has_options", "ipo", "ptp_no_exception"],
+      }),
     };
 
     let serialized = serde_json::to_string(&parameter).unwrap();

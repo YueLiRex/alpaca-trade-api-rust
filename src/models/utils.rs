@@ -61,3 +61,12 @@ where
     .parse::<u8>()
     .map_err(serde::de::Error::custom)
 }
+
+pub fn deserialize_str_to_u16<'de, D>(deserializer: D) -> Result<u16, D::Error>
+where
+  D: Deserializer<'de>,
+{
+  String::deserialize(deserializer)?
+    .parse::<u16>()
+    .map_err(serde::de::Error::custom)
+}

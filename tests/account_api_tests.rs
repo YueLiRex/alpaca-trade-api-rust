@@ -11,10 +11,8 @@ use httpmock::{
 
 #[tokio::test]
 async fn test_get_account() {
-  // Start a mock server
   let server = MockServer::start();
 
-  // Create a mock for the /v2/account endpoint
   let account_mock = server.mock(|when, then| {
     when
       .method(GET)
@@ -77,7 +75,6 @@ async fn test_get_account() {
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
   match api.get_account().await {
     Ok(account) => {
-      account_mock.assert();
       assert_eq!(
         account.id.to_string(),
         "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
@@ -85,6 +82,9 @@ async fn test_get_account() {
       assert_eq!(account.cash.value(), 100000.0);
       assert_eq!(account.portfolio_value.value(), 100000.0);
     }
-    Err(e) => panic!("API call failed: {:?}", e),
+    Err(e) => {
+      account_mock.assert();
+      panic!("API call failed: {:?}", e)
+    }
   }
 }

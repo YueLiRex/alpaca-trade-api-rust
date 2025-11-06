@@ -3,7 +3,8 @@ use serde::{
   Serialize,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
 pub enum Status {
   Active,
   Inactive,
