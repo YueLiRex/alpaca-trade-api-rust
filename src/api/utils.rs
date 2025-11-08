@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::Serialize;
 
 #[derive(Debug)]
@@ -46,4 +47,14 @@ impl Serialize for ComaSeparatedStrings {
     let s = self.values.join(",");
     serializer.serialize_str(&s)
   }
+}
+
+const FORMAT: &'static str = "%Y-%m-%d";
+
+pub fn serialize_naivedate_to_str<S>(date: &NaiveDate, serializer: S) -> Result<S::Ok, S::Error>
+where
+  S: serde::Serializer,
+{
+  let s = format!("{}", date.format(FORMAT));
+  serializer.serialize_str(&s)
 }

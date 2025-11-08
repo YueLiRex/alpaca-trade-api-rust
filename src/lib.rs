@@ -1,3 +1,11 @@
 pub mod api;
-pub mod client;
-pub mod models;
+
+mod client;
+mod models;
+
+pub mod prelude {
+  pub use crate::{
+    client::*,
+    models::*,
+  };
+}

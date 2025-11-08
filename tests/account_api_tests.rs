@@ -2,7 +2,7 @@ extern crate alpaca_trade_api_rust;
 
 use alpaca_trade_api_rust::{
   api::AccountApi,
-  client::Client,
+  prelude::Client,
 };
 use httpmock::{
   Method::GET,
@@ -10,7 +10,7 @@ use httpmock::{
 };
 
 #[tokio::test]
-async fn test_get_account() {
+async fn test_get_account_should_return_account() {
   let server = MockServer::start();
 
   let account_mock = server.mock(|when, then| {
@@ -85,6 +85,40 @@ async fn test_get_account() {
     Err(e) => {
       account_mock.assert();
       panic!("API call failed: {:?}", e)
+    }
+  }
+}
+
+#[tokio::test]
+async fn test_get_account_should_return_clientside_error() {
+  let server = MockServer::start();
+
+  let account_mock = server.mock(|when, then| {
+    when
+      .method(GET)
+      .header("Content-Type", "application/json")
+      .header("Accept", "application/json")
+      .header("APCA-API-KEY-ID", "test_key")
+      .header("APCA-API-SECRET-KEY", "test_secret")
+      .path("/v2/account");
+    then
+      .header("Content-Type", "application/json")
+      .status(404)
+      .body("Account not found");
+  });
+
+  let base_url = server.base_url();
+  let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
+  match api.get_account().await {
+    Ok(_) => {
+      panic!("Expect failure for this test")
+    }
+    Err(e) => {
+      account_mock.assert();
+      assert_eq!(
+        e.to_string().as_str(),
+        "code: 404, message: \"Account not found\""
+      )
     }
   }
 }

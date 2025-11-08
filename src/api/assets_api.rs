@@ -6,12 +6,14 @@ use crate::{
   client::Client,
   models::{
     Asset,
+    ErrorResponse,
     enums::{
       AssetClass,
       Exchange,
     },
   },
 };
+use anyhow::bail;
 use serde::Serialize;
 
 pub trait AssetsApi {
@@ -42,14 +44,20 @@ impl AssetsApi for Client {
 
   async fn get_asset_by_symbol_or_id(&self, symbol_or_id: &str) -> anyhow::Result<Asset> {
     let url = format!("{}/v2/assets/{}", self.base_url, symbol_or_id);
-    let resp = self
-      .client
-      .get(url)
-      .send()
-      .await?
-      .json::<crate::models::Asset>()
-      .await?;
-    Ok(resp)
+    match self.client.get(url).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let asset = response.json::<Asset>().await?;
+          Ok(asset)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(error) => {
+        bail!(error)
+      }
+    }
   }
 }
 
@@ -60,6 +68,7 @@ pub struct AssetsQueryParameter {
   pub asset_class: Option<AssetClass>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub exchange: Option<Exchange>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub attributes: Option<ComaSeparatedStrings>,
 }
 

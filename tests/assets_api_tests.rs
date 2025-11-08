@@ -5,11 +5,13 @@ use alpaca_trade_api_rust::{
     AssetsStatus,
     ComaSeparatedStrings,
   },
-  client::Client,
-  models::enums::{
-    AssetClass,
-    Exchange,
-    Status,
+  prelude::{
+    Client,
+    enums::{
+      AssetClass,
+      Exchange,
+      Status,
+    },
   },
 };
 use httpmock::{
@@ -22,7 +24,7 @@ use uuid::Uuid;
 extern crate alpaca_trade_api_rust;
 
 #[tokio::test]
-async fn test_get_assets() {
+async fn test_get_assets_should_return_assets() {
   let mockserver = MockServer::start();
 
   let asset_api_mock = mockserver.mock(|when, then| {
@@ -111,7 +113,7 @@ async fn test_get_assets() {
 }
 
 #[tokio::test]
-async fn test_get_asset_by_symbol_or_id() {
+async fn test_get_asset_by_symbol_or_id_should_return_asset() {
   let mock_server = MockServer::start();
 
   let asset_mock = mock_server.mock(|when, then| {
@@ -170,6 +172,46 @@ async fn test_get_asset_by_symbol_or_id() {
     Err(e) => {
       asset_mock.assert();
       panic!("API call failed: {:?}", e)
+    }
+  }
+}
+
+#[tokio::test]
+async fn test_get_asset_by_symbol_or_id_should_return_error_response() {
+  let mock_server = MockServer::start();
+
+  let asset_mock = mock_server.mock(|when, then| {
+    when
+      .method(GET)
+      .header("Content-Type", "application/json")
+      .header("Accept", "application/json")
+      .header("APCA-API-KEY-ID", "test_key")
+      .header("APCA-API-SECRET-KEY", "test_secret")
+      .path("/v2/assets/FAKE");
+    then
+      .status(404)
+      .header("Content-Type", "application/json")
+      .body(
+        r#"{
+            "code": 40410000,
+            "message": "asset not found for FAKE"
+          }"#,
+      );
+  });
+
+  let base_url = mock_server.base_url();
+  let client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
+
+  match client.get_asset_by_symbol_or_id("FAKE").await {
+    Ok(_) => {
+      panic!("Expect error in this test")
+    }
+    Err(error) => {
+      asset_mock.assert();
+      assert_eq!(
+        error.to_string().as_str(),
+        "code: 40410000, message: \"asset not found for FAKE\""
+      )
     }
   }
 }

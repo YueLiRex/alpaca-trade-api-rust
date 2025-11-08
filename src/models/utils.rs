@@ -70,3 +70,11 @@ where
     .parse::<u16>()
     .map_err(serde::de::Error::custom)
 }
+
+// pub fn deserialize_navidate_to_str<'de, D>(deserializer: D) -> Result<NaiveDate, D::Error>
+// where
+//   D: Deserializer<'de>,
+// {
+//   let str =String::deserialize(deserializer)?;
+//   NaiveDate::from_str(&str).map_err(serde::de::Error::custom)
+// }

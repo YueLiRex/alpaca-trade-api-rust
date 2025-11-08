@@ -4,7 +4,7 @@ use reqwest_middleware::ClientWithMiddleware;
 ///Create client from base_url, api_key and api_secret
 ///
 /// ```
-/// use alpaca_trade_api_rust::client::Client;
+/// use alpaca_trade_api_rust::prelude::Client;
 ///
 /// let client = Client::new(
 ///   "localhost:8080".to_string(),
