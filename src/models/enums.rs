@@ -44,6 +44,7 @@ pub enum Exchange {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Type {
   Market,
   Limit,
@@ -68,21 +69,9 @@ impl Serialize for Type {
   }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Side {
   Buy,
   Sell,
-}
-
-impl Serialize for Side {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: serde::Serializer,
-  {
-    let s = match *self {
-      Side::Buy => "buy",
-      Side::Sell => "sell",
-    };
-    serializer.serialize_str(s)
-  }
 }

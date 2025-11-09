@@ -1,7 +1,13 @@
-use crate::models::enums::{
-  AssetClass,
-  Side,
-  Type,
+use crate::models::{
+  enums::{
+    AssetClass,
+    Side,
+    Type,
+  },
+  utils::{
+    IntAsString,
+    Money,
+  },
 };
 use chrono::{
   DateTime,
@@ -10,13 +16,17 @@ use chrono::{
 use serde::{
   Deserialize,
   Serialize,
+  de::{
+    Error,
+    Visitor,
+  },
 };
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Order {
   pub id: Uuid,
-  pub client_order_id: Uuid,
+  pub client_order_id: String,
   pub created_at: Option<DateTime<Utc>>,
   pub updated_at: Option<DateTime<Utc>>,
   pub submitted_at: Option<DateTime<Utc>>,
@@ -31,10 +41,11 @@ pub struct Order {
   pub symbol: String,
   pub asset_class: AssetClass,
   pub national: Option<String>,
-  pub qty: Option<String>,
-  pub filled_qty: Option<String>,
-  pub filled_avg_price: Option<String>,
+  pub qty: Option<IntAsString>,
+  pub filled_qty: Option<Money>,
+  pub filled_avg_price: Option<Money>,
   pub order_class: OrderClass,
+  #[serde(rename = "type")]
   pub _type: Type,
   pub side: Side,
   pub time_in_force: TimeInForce,
@@ -42,14 +53,15 @@ pub struct Order {
   pub stop_price: Option<String>,
   pub status: OrderStatus,
   pub extended_hours: bool,
-  pub legs: Vec<Order>,
-  pub trail_price: Option<String>,
-  pub trail_percent: Option<String>,
-  pub hwm: Option<String>,
+  pub legs: Option<Vec<Order>>,
+  pub trail_price: Option<Money>,
+  pub trail_percent: Option<Money>,
+  pub hwm: Option<Money>,
   pub position_intent: PositionIntent,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum OrderStatus {
   New,
   PartiallyFilled,
@@ -59,22 +71,63 @@ pub enum OrderStatus {
   Expired,
   Replaced,
   PendingCancel,
+  PendingReplace,
+  Accepted,
+  PendingNew,
+  AcceptedForBidding,
   Stopped,
   Rejected,
   Suspended,
-  PendingNew,
   Calculated,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum OrderClass {
   Simple,
   Oco,
+  Otc,
   Trigger,
   Bracket,
+  Mleg,
+  Empty,
 }
 
-#[derive(Debug, Deserialize)]
+impl<'de> Deserialize<'de> for OrderClass {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    deserializer.deserialize_str(OrderClassVisitor)
+  }
+}
+
+struct OrderClassVisitor;
+impl<'de> Visitor<'de> for OrderClassVisitor {
+  type Value = OrderClass;
+
+  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    formatter.write_str("error from OrderClass deserilaizer")
+  }
+
+  fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+  where
+    E: serde::de::Error,
+  {
+    match v {
+      "" => Ok(OrderClass::Empty),
+      "simple" => Ok(OrderClass::Simple),
+      "bracket" => Ok(OrderClass::Bracket),
+      "oco" => Ok(OrderClass::Oco),
+      "oto" => Ok(OrderClass::Otc),
+      "mleg" => Ok(OrderClass::Mleg),
+      _ => Err(Error::custom("Unexpect value received for OrderClass")),
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum TimeInForce {
   DAY,
   GTC,
@@ -84,26 +137,11 @@ pub enum TimeInForce {
   FOK,
 }
 
-impl Serialize for TimeInForce {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: serde::Serializer,
-  {
-    let s = match *self {
-      TimeInForce::DAY => "day",
-      TimeInForce::GTC => "gtc",
-      TimeInForce::OPG => "opg",
-      TimeInForce::CLS => "cls",
-      TimeInForce::IOC => "ioc",
-      TimeInForce::FOK => "fok",
-    };
-    serializer.serialize_str(s)
-  }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum PositionIntent {
-  Opening,
-  Closing,
-  Unknown,
+  BuyToOpen,
+  BuyToClose,
+  SellToOpen,
+  SellToClose,
 }

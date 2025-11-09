@@ -13,7 +13,7 @@ impl Serialize for Money {
   where
     S: serde::Serializer,
   {
-    serializer.serialize_f64(self.0)
+    serializer.serialize_str(self.0.to_string().as_str())
   }
 }
 
@@ -41,7 +41,7 @@ impl<'de> Visitor<'de> for MoneyVisitor {
   type Value = Money;
 
   fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-    formatter.write_str("a string representing a float value")
+    formatter.write_str("a string representing a Float value")
   }
 
   fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -50,6 +50,54 @@ impl<'de> Visitor<'de> for MoneyVisitor {
   {
     let value: f64 = v.parse().map_err(serde::de::Error::custom)?;
     Ok(Money(value))
+  }
+}
+
+#[derive(Debug)]
+pub struct IntAsString(u32);
+
+impl Serialize for IntAsString {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    serializer.serialize_str(self.0.to_string().as_str())
+  }
+}
+
+impl<'de> Deserialize<'de> for IntAsString {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: Deserializer<'de>,
+  {
+    deserializer.deserialize_string(IntAsStringVisitor)
+  }
+}
+
+impl IntAsString {
+  pub fn from_u32(v: u32) -> Self {
+    IntAsString(v)
+  }
+
+  pub fn value(&self) -> u32 {
+    self.0
+  }
+}
+
+struct IntAsStringVisitor;
+impl<'de> Visitor<'de> for IntAsStringVisitor {
+  type Value = IntAsString;
+
+  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    formatter.write_str("a string representing a Integer value")
+  }
+
+  fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+  where
+    E: serde::de::Error,
+  {
+    let value: u32 = v.parse().map_err(serde::de::Error::custom)?;
+    Ok(IntAsString(value))
   }
 }
 
@@ -71,7 +119,7 @@ where
     .map_err(serde::de::Error::custom)
 }
 
-// pub fn deserialize_navidate_to_str<'de, D>(deserializer: D) -> Result<NaiveDate, D::Error>
+// pub fn deserialize_navidate_from_str<'de, D>(deserializer: D) -> Result<NaiveDate, D::Error>
 // where
 //   D: Deserializer<'de>,
 // {

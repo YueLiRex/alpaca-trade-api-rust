@@ -1,3 +1,7 @@
+use crate::models::utils::{
+  IntAsString,
+  Money,
+};
 use chrono::NaiveDate;
 use serde::{
   Deserialize,
@@ -12,8 +16,8 @@ pub struct Deliverable {
   pub symbol: String,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub asset_id: Option<Uuid>,
-  pub amount: u16,
-  pub allocation_percentage: u16,
+  pub amount: IntAsString,
+  pub allocation_percentage: IntAsString,
   pub settlement_type: String,
   pub settlement_method: DeliverableSettlementMethod,
   pub delayed_settlement: bool,
@@ -21,44 +25,61 @@ pub struct Deliverable {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OptionContract {
-  id: Uuid,
-  symbol: String,
-  name: String,
-  tradeable: bool,
-  expiration_date: NaiveDate,
+  pub id: Uuid,
+  pub symbol: String,
+  pub name: String,
+  pub tradable: bool,
+  pub expiration_date: NaiveDate,
   #[serde(skip_serializing_if = "Option::is_none")]
-  root_symbol: Option<String>,
-  underlying_symbol: String,
-  underlying_asset_id: Uuid,
-  _type: OptionType,
-  style: OptionStyle,
-  strike_price: f64,
-  multiplier: u16,
-  size: u16,
+  pub root_symbol: Option<String>,
+  pub underlying_symbol: String,
+  pub underlying_asset_id: Uuid,
+  #[serde(rename = "type")]
+  pub _type: OptionType,
+  pub style: OptionStyle,
+  pub strike_price: Money,
+  pub multiplier: IntAsString,
+  pub size: IntAsString,
   #[serde(skip_serializing_if = "Option::is_none")]
-  open_interest: Option<u32>,
+  pub open_interest: Option<u32>,
   #[serde(skip_serializing_if = "Option::is_none")]
-  open_interest_date: Option<NaiveDate>,
+  pub open_interest_date: Option<NaiveDate>,
   #[serde(skip_serializing_if = "Option::is_none")]
-  close_price: Option<f64>,
+  pub close_price: Option<Money>,
   #[serde(skip_serializing_if = "Option::is_none")]
-  close_price_date: Option<NaiveDate>,
-  deliverables: Vec<Deliverable>,
+  pub close_price_date: Option<NaiveDate>,
+  pub deliverables: Option<Vec<Deliverable>>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum OptionStatus {
+  Active,
+  Inactive,
+}
+
+impl Default for OptionStatus {
+  fn default() -> Self {
+    OptionStatus::Active
+  }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum OptionType {
   Call,
   Put,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum OptionStyle {
   American,
   European,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum DeliverableType {
   Cash,
   Equity,
