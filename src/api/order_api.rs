@@ -20,7 +20,7 @@ use anyhow::anyhow;
 use serde::Serialize;
 
 pub trait OrderApi {
-  fn create_order(&self, order: &Order) -> impl Future<Output = anyhow::Result<Order>>;
+  fn create_order(&self, order: &OrderRequestBody) -> impl Future<Output = anyhow::Result<Order>>;
 
   fn get_all_orders(
     &self,
@@ -41,12 +41,12 @@ pub trait OrderApi {
 }
 
 impl OrderApi for Client {
-  async fn create_order(&self, order: &Order) -> anyhow::Result<Order> {
+  async fn create_order(&self, order_request_body: &OrderRequestBody) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders", self.base_url);
     let resp = self
       .client
       .post(url)
-      .json(order)
+      .json(order_request_body)
       .send()
       .await?
       .json::<Order>()

@@ -43,7 +43,7 @@ pub enum Exchange {
   CRYPTO,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum Type {
   Market,
