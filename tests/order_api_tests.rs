@@ -30,7 +30,6 @@ use httpmock::{
     POST,
   },
   MockServer,
-  server::matchers::readers::expectations::body,
 };
 use std::str::FromStr;
 use uuid::Uuid;

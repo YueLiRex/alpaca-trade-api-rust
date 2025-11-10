@@ -2,6 +2,7 @@ use crate::{
   api::utils::ComaSeparatedStrings,
   client::Client,
   models::{
+    ErrorResponse,
     Order,
     OrderClass,
     PositionIntent,
@@ -16,8 +17,12 @@ use crate::{
     },
   },
 };
-use anyhow::anyhow;
-use serde::Serialize;
+use anyhow::bail;
+use serde::{
+  Deserialize,
+  Serialize,
+};
+use uuid::Uuid;
 
 pub trait OrderApi {
   fn create_order(&self, order: &OrderRequestBody) -> impl Future<Output = anyhow::Result<Order>>;
@@ -27,14 +32,20 @@ pub trait OrderApi {
     query_parameter: &AllOrdersQueryParameter,
   ) -> impl Future<Output = anyhow::Result<Vec<Order>>>;
 
-  fn delete_all_orders(&self) -> impl Future<Output = anyhow::Result<()>>;
+  fn delete_all_orders(&self)
+  -> impl Future<Output = anyhow::Result<Vec<DeleteAllOrdersResponse>>>;
 
-  fn get_order_by_id(&self, order_id: uuid::Uuid) -> impl Future<Output = anyhow::Result<Order>>;
+  fn get_order_by_client_order_id(
+    &self,
+    client_order_id: String,
+  ) -> impl Future<Output = anyhow::Result<Order>>;
+
+  fn get_order_by_id(&self, id: Uuid) -> impl Future<Output = anyhow::Result<Order>>;
 
   fn replace_order_by_id(
     &self,
     order_id: uuid::Uuid,
-    order: &Order,
+    order: ReplaceOrderByIdRequestBody,
   ) -> impl Future<Output = anyhow::Result<Order>>;
 
   fn delete_order_by_id(&self, order_id: uuid::Uuid) -> impl Future<Output = anyhow::Result<()>>;
@@ -43,15 +54,18 @@ pub trait OrderApi {
 impl OrderApi for Client {
   async fn create_order(&self, order_request_body: &OrderRequestBody) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders", self.base_url);
-    let resp = self
-      .client
-      .post(url)
-      .json(order_request_body)
-      .send()
-      .await?
-      .json::<Order>()
-      .await?;
-    Ok(resp)
+    match self.client.post(url).json(order_request_body).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let order = response.json::<Order>().await?;
+          Ok(order)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(err) => bail!(err),
+    }
   }
 
   async fn get_all_orders(
@@ -59,70 +73,109 @@ impl OrderApi for Client {
     query_parameter: &AllOrdersQueryParameter,
   ) -> anyhow::Result<Vec<Order>> {
     let url = format!("{}/v2/orders", self.base_url);
-    let resp = self
-      .client
-      .get(url)
-      .query(query_parameter)
-      .send()
-      .await?
-      .json::<Vec<Order>>()
-      .await?;
-    Ok(resp)
-  }
-
-  async fn delete_all_orders(&self) -> anyhow::Result<()> {
-    let url = format!("{}/v2/orders", self.base_url);
-    let response = self.client.delete(url).send().await?;
-    match response.status() {
-      status if status.is_client_error() => {
-        Err(anyhow!("Failed to delete all orders: HTTP {}", status))
+    match self.client.get(url).query(query_parameter).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let orders = response.json::<Vec<Order>>().await?;
+          Ok(orders)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
       }
-      status if status.is_server_error() => Err(anyhow!(
-        "Server error when deleting all orders: HTTP {}",
-        status
-      )),
-      _ => Ok(()),
+      Err(err) => bail!(err),
     }
   }
 
-  async fn get_order_by_id(&self, order_id: uuid::Uuid) -> anyhow::Result<Order> {
+  async fn delete_all_orders(&self) -> anyhow::Result<Vec<DeleteAllOrdersResponse>> {
+    let url = format!("{}/v2/orders", self.base_url);
+    match self.client.delete(url).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let result = response.json::<Vec<DeleteAllOrdersResponse>>().await?;
+          Ok(result)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(error) => bail!(error),
+    }
+  }
+
+  async fn get_order_by_client_order_id(&self, client_order_id: String) -> anyhow::Result<Order> {
+    let url = format!("{}/v2/orders:by_client_order_id", self.base_url);
+    let query_param = GetOrderByClientIdParameter {
+      client_order_id: client_order_id,
+    };
+    match self.client.get(url).query(&query_param).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let result = response.json::<Order>().await?;
+          Ok(result)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(error) => bail!(error),
+    }
+  }
+
+  async fn get_order_by_id(&self, order_id: Uuid) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
-    let resp = self.client.get(url).send().await?.json::<Order>().await?;
-    Ok(resp)
+    match self.client.get(url).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          let result = response.json::<Order>().await?;
+          Ok(result)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(error) => bail!(error),
+    }
   }
 
   async fn replace_order_by_id(
     &self,
     order_id: uuid::Uuid,
-    order: &Order,
+    replace_order_body: ReplaceOrderByIdRequestBody,
   ) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
-    let resp = self
+    match self
       .client
-      .put(url)
-      .json(order)
+      .patch(url)
+      .json(&replace_order_body)
       .send()
-      .await?
-      .json::<Order>()
-      .await?;
-    Ok(resp)
+      .await
+    {
+      Ok(response) => {
+        if response.status().is_success() {
+          let result = response.json::<Order>().await?;
+          Ok(result)
+        } else {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        }
+      }
+      Err(err) => bail!(err),
+    }
   }
 
   async fn delete_order_by_id(&self, order_id: uuid::Uuid) -> anyhow::Result<()> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
-    let response = self.client.delete(url).send().await?;
-    match response.status() {
-      status if status.is_client_error() => Err(anyhow!(
-        "Failed to delete order {}: HTTP {}",
-        order_id,
-        status
-      )),
-      status if status.is_server_error() => Err(anyhow!(
-        "Server error when deleting order {}: HTTP {}",
-        order_id,
-        status
-      )),
-      _ => Ok(()),
+    match self.client.delete(url).send().await {
+      Ok(response) => {
+        if response.status().is_client_error() {
+          let error_response = response.json::<ErrorResponse>().await?;
+          bail!(error_response)
+        } else {
+          Ok(())
+        }
+      }
+      Err(error) => bail!(error),
     }
   }
 }
@@ -199,6 +252,27 @@ pub struct AllOrdersQueryParameter {
   pub before_order_id: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub after_order_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DeleteAllOrdersResponse {
+  pub id: Uuid,
+  pub status: u16,
+}
+
+#[derive(Debug, Serialize)]
+pub struct GetOrderByClientIdParameter {
+  client_order_id: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ReplaceOrderByIdRequestBody {
+  pub qty: IntAsString,
+  pub time_in_force: TimeInForce,
+  pub limit_price: Money,
+  pub stop_price: Money,
+  pub trail: Money,
+  pub client_order_id: String,
 }
 
 #[derive(Debug, Serialize)]
