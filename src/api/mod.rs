@@ -1,17 +1,25 @@
 mod account_api;
 mod assets_api;
+mod calenda_api;
+mod clock_api;
 mod corporate_action_api;
+mod crypto_funding_api;
 mod option_api;
 mod order_api;
 mod portfolio_api;
 mod position_api;
 mod utils;
+mod watch_list_api;
 
 pub use account_api::*;
 pub use assets_api::*;
+pub use calenda_api::*;
+pub use clock_api::*;
 pub use corporate_action_api::*;
+pub use crypto_funding_api::*;
 pub use option_api::*;
 pub use order_api::*;
 pub use portfolio_api::*;
 pub use position_api::*;
 pub use utils::*;
+pub use watch_list_api::*;

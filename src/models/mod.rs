@@ -1,6 +1,9 @@
 mod account;
 mod assets;
+mod calendar;
+mod clock;
 mod corporate_action;
+mod crypto_funding;
 pub mod enums;
 mod error;
 mod options;
@@ -8,12 +11,17 @@ mod orders;
 mod position;
 mod profiles;
 pub mod utils;
+mod watch_list;
 
 pub use account::*;
 pub use assets::*;
+pub use calendar::*;
+pub use clock::*;
 pub use corporate_action::*;
+pub use crypto_funding::*;
 pub use error::*;
 pub use options::*;
 pub use orders::*;
 pub use position::*;
 pub use profiles::*;
+pub use watch_list::*;
