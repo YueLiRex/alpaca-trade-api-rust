@@ -47,7 +47,6 @@ pub trait CryptoFundingApi {
     &self,
     request_parameter: ReturnGasFeeParameter,
   ) -> impl Future<Output = anyhow::Result<GasFee>>;
-
 }
 
 impl CryptoFundingApi for Client {
@@ -160,7 +159,10 @@ impl CryptoFundingApi for Client {
   }
 
   async fn delete_whitelisted_address(&self, whitelisted_address_id: String) -> anyhow::Result<()> {
-    let url = format!("{}/v2/wallets/whitelists/{}", self.base_url, whitelisted_address_id);
+    let url = format!(
+      "{}/v2/wallets/whitelists/{}",
+      self.base_url, whitelisted_address_id
+    );
     match self.client.delete(url).send().await {
       Ok(response) => {
         if response.status().is_success() {

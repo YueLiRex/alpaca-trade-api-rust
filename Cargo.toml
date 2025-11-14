@@ -1,5 +1,5 @@
 [package]
-name = "alpaca_trade_api_rust"
+name = "alpaca-trade-api-rust"
 version = "0.1.0"
 edition = "2024"
 
@@ -19,3 +19,7 @@ serde_with = "3.15.1"
 
 [dev-dependencies]
 httpmock = "0.8.2"
+criterion = { version = "0.7", features = ["html_reports"] }
+
+[lib]
+name = "alpaca_trade_api_rust"

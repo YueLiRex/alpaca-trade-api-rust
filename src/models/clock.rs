@@ -1,13 +1,13 @@
 use chrono::{
   DateTime,
-  Utc,
+  Local,
 };
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct MarketClock {
-  pub timestamp: DateTime<Utc>,
+  pub timestamp: DateTime<Local>,
   pub is_open: bool,
-  pub next_open: DateTime<Utc>,
-  pub next_close: DateTime<Utc>,
+  pub next_open: DateTime<Local>,
+  pub next_close: DateTime<Local>,
 }

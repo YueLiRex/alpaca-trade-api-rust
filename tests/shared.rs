@@ -3,36 +3,30 @@ use httpmock::{
   Method,
   MockServer,
 };
-pub struct TestContext {
-  pub mock_server: MockServer,
-  pub api_client: Client,
+pub struct TestContext<'tst> {
+  mock_server: &'tst MockServer,
+  api_client: &'tst Client,
 }
 
-impl TestContext {
-  pub fn new() -> Self {
-    let ms = MockServer::start();
-    let client = Client::new(
-      ms.base_url(),
-      "test_key".to_string(),
-      "test_secret".to_string(),
-    );
+impl<'tst> TestContext<'tst> {
+  pub fn new(mock_server: &'tst MockServer, api_client: &'tst Client) -> Self {
     Self {
-      mock_server: MockServer::start(),
-      api_client: client,
+      mock_server: mock_server,
+      api_client: api_client,
     }
   }
 
-  pub fn base_url(&self) -> String {
-    self.mock_server.base_url()
-  }
-
-  pub fn mock_endpoint(
+  pub async fn setup_endpoint<Fn, Fut>(
     &self,
     method: Method,
     path: &str,
     status: u16,
     body: &str,
-  ) -> httpmock::Mock {
+    assertion: Fn,
+  ) where
+    Fn: FnOnce(&'tst Client) -> Fut,
+    Fut: Future<Output = ()>,
+  {
     self.mock_server.mock(|when, then| {
       when
         .method(method)
@@ -41,10 +35,13 @@ impl TestContext {
         .header("APCA-API-KEY-ID", "test_key")
         .header("APCA-API-SECRET-KEY", "test_secret")
         .path(path);
+
       then
         .status(status)
         .header("Content-Type", "application/json")
         .body(body);
-    })
+    });
+
+    assertion(self.api_client).await;
   }
 }
