@@ -105,9 +105,7 @@ impl OrderApi for Client {
 
   async fn get_order_by_client_order_id(&self, client_order_id: String) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders:by_client_order_id", self.base_url);
-    let query_param = GetOrderByClientIdParameter {
-      client_order_id: client_order_id,
-    };
+    let query_param = GetOrderByClientIdParameter { client_order_id };
     match self.client.get(url).query(&query_param).send().await {
       Ok(response) => {
         if response.status().is_success() {
@@ -303,6 +301,7 @@ mod tests {
   use crate::{
     api::{
       OrderRequestBody,
+      ReplaceOrderByIdRequestBody,
       StopLoss,
       TakeProfit,
     },
@@ -383,5 +382,22 @@ mod tests {
 
     let expected = r#"{"status":"open","limit":50,"direction":"desc","nested":true,"symbols":"AAPL,TSLA","asset_class":"us_option,crypto"}"#;
     assert_eq!(serialized, expected);
+  }
+
+  #[test]
+  fn replace_order_by_id_request_body_serialization() {
+    let body = ReplaceOrderByIdRequestBody {
+      qty: IntAsString::from_u32(4),
+      time_in_force: TimeInForce::DAY,
+      limit_price: Money::from_f64(100.0),
+      stop_price: Money::from_f64(90.0),
+      trail: Money::from_f64(10.0),
+      client_order_id: String::from("test_client_order_id"),
+    };
+
+    let serialized = serde_json::to_string(&body).unwrap();
+    let expected = r#"{"qty":"4","time_in_force":"day","limit_price":"100","stop_price":"90","trail":"10","client_order_id":"test_client_order_id"}"#;
+
+    assert_eq!(serialized, expected)
   }
 }

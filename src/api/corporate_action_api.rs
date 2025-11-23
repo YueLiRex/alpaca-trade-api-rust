@@ -17,7 +17,7 @@ use uuid::Uuid;
 pub trait CorporateActionApi {
   fn get_specific_corporate_actions(
     &self,
-    uuid: Uuid,
+    uuid: &Uuid,
   ) -> impl Future<Output = anyhow::Result<CorporateAction>>;
 
   fn get_corporate_actions(
@@ -27,7 +27,7 @@ pub trait CorporateActionApi {
 }
 
 impl CorporateActionApi for Client {
-  async fn get_specific_corporate_actions(&self, uuid: Uuid) -> anyhow::Result<CorporateAction> {
+  async fn get_specific_corporate_actions(&self, uuid: &Uuid) -> anyhow::Result<CorporateAction> {
     let id = uuid.to_string();
     let url = format!(
       "{}/v2/corporate_actions/announcements/{}",

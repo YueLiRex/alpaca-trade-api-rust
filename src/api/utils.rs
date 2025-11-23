@@ -1,15 +1,9 @@
 use chrono::NaiveDate;
 use serde::Serialize;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct DefaultBoolean {
   pub value: bool,
-}
-
-impl Default for DefaultBoolean {
-  fn default() -> Self {
-    DefaultBoolean { value: false }
-  }
 }
 
 impl Serialize for DefaultBoolean {
@@ -21,17 +15,12 @@ impl Serialize for DefaultBoolean {
   }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default)]
 pub enum AssetsStatus {
   Active,
   Inactive,
+  #[default]
   All,
-}
-
-impl Default for AssetsStatus {
-  fn default() -> Self {
-    Self::All
-  }
 }
 
 #[derive(Debug)]
@@ -49,7 +38,7 @@ impl Serialize for ComaSeparatedStrings {
   }
 }
 
-const FORMAT: &'static str = "%Y-%m-%d";
+const FORMAT: &str = "%Y-%m-%d";
 
 pub fn serialize_naivedate_to_str<S>(date: &NaiveDate, serializer: S) -> Result<S::Ok, S::Error>
 where

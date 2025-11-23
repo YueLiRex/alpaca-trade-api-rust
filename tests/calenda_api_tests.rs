@@ -1,6 +1,5 @@
 use alpaca_trade_api_rust::{
   api::{
-    AccountApi,
     CalendarApi,
     CalendarApiQueryParameter,
   },

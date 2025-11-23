@@ -5,15 +5,11 @@ use serde::{
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Status {
+  #[default]
   Active,
   Inactive,
-}
-
-impl Default for Status {
-  fn default() -> Self {
-    Self::Active
-  }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

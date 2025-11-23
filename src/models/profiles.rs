@@ -4,16 +4,21 @@ use serde::{
   Deserialize,
   Serialize,
 };
-use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PortfolioHistory {
-  pub timestamp: Vec<i64>,
+  pub timestamp: Vec<u64>,
   pub equity: Vec<f64>,
   pub profit_loss: Vec<f64>,
   pub profit_loss_pct: Vec<f64>,
   pub base_value: Money,
   pub base_value_asof: NaiveDate,
-  pub timeframe: f64,
-  pub cashflow: HashMap<String, f64>,
+  pub timeframe: String,
+  pub cashflow: Option<CashFlow>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename(deserialize = "FEE"))]
+pub struct CashFlow {
+  pub fee: Option<Vec<f64>>,
 }

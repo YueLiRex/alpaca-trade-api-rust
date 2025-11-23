@@ -15,44 +15,45 @@ use serde::Serialize;
 pub trait CryptoFundingApi {
   fn get_all_crypto_funding_wallet(
     &self,
-    request_parameter: FundingWalletsParameter,
+    request_parameter: &FundingWalletsParameter,
   ) -> impl Future<Output = anyhow::Result<Vec<CryptoWalletInfo>>>;
 
-  fn get_all_crypto_funding_transfer(&self)
-  -> impl Future<Output = anyhow::Result<CryptoTransfer>>;
+  fn get_all_crypto_funding_transfer(
+    &self,
+  ) -> impl Future<Output = anyhow::Result<Vec<CryptoTransfer>>>;
 
   fn new_withdrawal(
     &self,
-    request_body: WithdrawalReqBody,
+    request_body: &WithdrawalReqBody,
   ) -> impl Future<Output = anyhow::Result<CryptoTransfer>>;
 
   fn get_crypto_funding_transfer(
     &self,
-    transfer_id: String,
+    transfer_id: &str,
   ) -> impl Future<Output = anyhow::Result<CryptoTransfer>>;
 
   fn get_whitelisted_addresses(&self) -> impl Future<Output = anyhow::Result<WhiteListedAddress>>;
 
   fn new_whitelisted_address(
     &self,
-    request_body: WhitelistedAddressReqBody,
+    request_body: &WhitelistedAddressReqBody,
   ) -> impl Future<Output = anyhow::Result<WhiteListedAddress>>;
 
   fn delete_whitelisted_address(
     &self,
-    whitelisted_address_id: String,
+    whitelisted_address_id: &str,
   ) -> impl Future<Output = anyhow::Result<()>>;
 
   fn return_estimate_gas_fee(
     &self,
-    request_parameter: ReturnGasFeeParameter,
+    request_parameter: &ReturnGasFeeParameter,
   ) -> impl Future<Output = anyhow::Result<GasFee>>;
 }
 
 impl CryptoFundingApi for Client {
   async fn get_all_crypto_funding_wallet(
     &self,
-    request_parameter: FundingWalletsParameter,
+    request_parameter: &FundingWalletsParameter,
   ) -> anyhow::Result<Vec<CryptoWalletInfo>> {
     let url = format!("{}/v2/wallets", self.base_url);
     match self.client.get(url).query(&request_parameter).send().await {
@@ -69,12 +70,12 @@ impl CryptoFundingApi for Client {
     }
   }
 
-  async fn get_all_crypto_funding_transfer(&self) -> anyhow::Result<CryptoTransfer> {
+  async fn get_all_crypto_funding_transfer(&self) -> anyhow::Result<Vec<CryptoTransfer>> {
     let url = format!("{}/v2/wallets/transfers", self.base_url);
     match self.client.get(url).send().await {
       Ok(response) => {
         if response.status().is_success() {
-          let transfers = response.json::<CryptoTransfer>().await?;
+          let transfers = response.json::<Vec<CryptoTransfer>>().await?;
           Ok(transfers)
         } else {
           let error_response = response.json::<ErrorResponse>().await?;
@@ -87,7 +88,7 @@ impl CryptoFundingApi for Client {
 
   async fn new_withdrawal(
     &self,
-    request_body: WithdrawalReqBody,
+    request_body: &WithdrawalReqBody,
   ) -> anyhow::Result<CryptoTransfer> {
     let url = format!("{}/v2/wallets", self.base_url);
     match self.client.post(url).json(&request_body).send().await {
@@ -104,10 +105,7 @@ impl CryptoFundingApi for Client {
     }
   }
 
-  async fn get_crypto_funding_transfer(
-    &self,
-    transfer_id: String,
-  ) -> anyhow::Result<CryptoTransfer> {
+  async fn get_crypto_funding_transfer(&self, transfer_id: &str) -> anyhow::Result<CryptoTransfer> {
     let url = format!("{}/v2/wallets/transfers/{}", self.base_url, transfer_id);
     match self.client.get(url).send().await {
       Ok(response) => {
@@ -141,7 +139,7 @@ impl CryptoFundingApi for Client {
 
   async fn new_whitelisted_address(
     &self,
-    request_body: WhitelistedAddressReqBody,
+    request_body: &WhitelistedAddressReqBody,
   ) -> anyhow::Result<WhiteListedAddress> {
     let url = format!("{}/v2/wallets/whitelists", self.base_url);
     match self.client.post(url).json(&request_body).send().await {
@@ -158,7 +156,7 @@ impl CryptoFundingApi for Client {
     }
   }
 
-  async fn delete_whitelisted_address(&self, whitelisted_address_id: String) -> anyhow::Result<()> {
+  async fn delete_whitelisted_address(&self, whitelisted_address_id: &str) -> anyhow::Result<()> {
     let url = format!(
       "{}/v2/wallets/whitelists/{}",
       self.base_url, whitelisted_address_id
@@ -178,7 +176,7 @@ impl CryptoFundingApi for Client {
 
   async fn return_estimate_gas_fee(
     &self,
-    request_parameter: ReturnGasFeeParameter,
+    request_parameter: &ReturnGasFeeParameter,
   ) -> anyhow::Result<GasFee> {
     let url = format!("{}/v2/wallets/fees/estimate", self.base_url);
     match self.client.get(url).query(&request_parameter).send().await {

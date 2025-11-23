@@ -53,15 +53,11 @@ pub struct OptionContract {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum OptionStatus {
+  #[default]
   Active,
   Inactive,
-}
-
-impl Default for OptionStatus {
-  fn default() -> Self {
-    OptionStatus::Active
-  }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

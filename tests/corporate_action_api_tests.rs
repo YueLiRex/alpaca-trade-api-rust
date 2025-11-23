@@ -153,7 +153,9 @@ async fn test_get_specific_corporate_actions_should_return_action() {
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api
-    .get_specific_corporate_actions(Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap())
+    .get_specific_corporate_actions(
+      &Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap(),
+    )
     .await
   {
     Ok(action) => {
@@ -196,7 +198,9 @@ async fn test_get_specific_corporate_actions_should_return_error_response() {
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api
-    .get_specific_corporate_actions(Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap())
+    .get_specific_corporate_actions(
+      &Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap(),
+    )
     .await
   {
     Ok(_) => {
