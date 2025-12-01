@@ -131,9 +131,9 @@ impl<'de> Visitor<'de> for MoneyVisitor {
 }
 
 #[derive(Debug)]
-pub struct IntAsString(u32);
+pub struct NumberAsString(f64);
 
-impl Serialize for IntAsString {
+impl Serialize for NumberAsString {
   fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
   where
     S: serde::Serializer,
@@ -142,28 +142,29 @@ impl Serialize for IntAsString {
   }
 }
 
-impl<'de> Deserialize<'de> for IntAsString {
+impl<'de> Deserialize<'de> for NumberAsString {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
   where
     D: Deserializer<'de>,
   {
-    deserializer.deserialize_string(IntAsStringVisitor)
+    deserializer.deserialize_string(NumberAsStringVisitor)
   }
 }
 
-impl IntAsString {
-  pub fn from_u32(v: u32) -> Self {
-    IntAsString(v)
+impl NumberAsString {
+  pub fn from_f64(v: f64) -> Self {
+    NumberAsString(v)
   }
 
-  pub fn value(&self) -> u32 {
+  pub fn value(&self) -> f64 {
     self.0
   }
 }
 
-struct IntAsStringVisitor;
-impl<'de> Visitor<'de> for IntAsStringVisitor {
-  type Value = IntAsString;
+struct NumberAsStringVisitor;
+
+impl<'de> Visitor<'de> for NumberAsStringVisitor {
+  type Value = NumberAsString;
 
   fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
     formatter.write_str("a string representing a Integer value")
@@ -173,8 +174,8 @@ impl<'de> Visitor<'de> for IntAsStringVisitor {
   where
     E: serde::de::Error,
   {
-    let value: u32 = v.parse().map_err(serde::de::Error::custom)?;
-    Ok(IntAsString(value))
+    let value: f64 = v.parse().map_err(serde::de::Error::custom)?;
+    Ok(NumberAsString(value))
   }
 }
 

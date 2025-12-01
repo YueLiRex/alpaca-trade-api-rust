@@ -41,7 +41,7 @@ pub enum Exchange {
 
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
-pub enum Type {
+pub enum OrderType {
   Market,
   Limit,
   Stop,
@@ -49,17 +49,17 @@ pub enum Type {
   TrailingStop,
 }
 
-impl Serialize for Type {
+impl Serialize for OrderType {
   fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
   where
     S: serde::Serializer,
   {
     let s = match *self {
-      Type::Market => "market",
-      Type::Limit => "limit",
-      Type::Stop => "stop",
-      Type::StopLimit => "stop_limit",
-      Type::TrailingStop => "trailing_stop",
+      OrderType::Market => "market",
+      OrderType::Limit => "limit",
+      OrderType::Stop => "stop",
+      OrderType::StopLimit => "stop_limit",
+      OrderType::TrailingStop => "trailing_stop",
     };
     serializer.serialize_str(s)
   }

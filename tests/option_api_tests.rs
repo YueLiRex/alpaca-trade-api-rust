@@ -178,7 +178,7 @@ async fn test_get_specific_option_contracts_should_return_one() {
   {
     Ok(option_contract) => {
       assert_eq!(option_contract.deliverables.map(|d| d.len()), Some(1));
-      assert_eq!(option_contract.size.value(), 100)
+      assert_eq!(option_contract.size.value(), 100.0)
     }
     Err(error) => {
       endpoint_mock.assert();

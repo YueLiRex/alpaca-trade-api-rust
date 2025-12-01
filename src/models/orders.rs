@@ -2,11 +2,11 @@ use crate::models::{
   enums::{
     AssetClass,
     Side,
-    Type,
+    OrderType,
   },
   utils::{
-    IntAsString,
     Money,
+    NumberAsString,
   },
 };
 use chrono::{
@@ -41,12 +41,12 @@ pub struct Order {
   pub symbol: String,
   pub asset_class: AssetClass,
   pub national: Option<String>,
-  pub qty: Option<IntAsString>,
+  pub qty: Option<NumberAsString>,
   pub filled_qty: Option<Money>,
   pub filled_avg_price: Option<Money>,
   pub order_class: OrderClass,
   #[serde(rename = "type")]
-  pub _type: Type,
+  pub _type: OrderType,
   pub side: Side,
   pub time_in_force: TimeInForce,
   pub limit_price: Option<String>,

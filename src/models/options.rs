@@ -1,6 +1,6 @@
 use crate::models::utils::{
-  IntAsString,
   Money,
+  NumberAsString,
 };
 use chrono::NaiveDate;
 use serde::{
@@ -16,8 +16,8 @@ pub struct Deliverable {
   pub symbol: String,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub asset_id: Option<Uuid>,
-  pub amount: IntAsString,
-  pub allocation_percentage: IntAsString,
+  pub amount: NumberAsString,
+  pub allocation_percentage: NumberAsString,
   pub settlement_type: String,
   pub settlement_method: DeliverableSettlementMethod,
   pub delayed_settlement: bool,
@@ -38,8 +38,8 @@ pub struct OptionContract {
   pub _type: OptionType,
   pub style: OptionStyle,
   pub strike_price: Money,
-  pub multiplier: IntAsString,
-  pub size: IntAsString,
+  pub multiplier: NumberAsString,
+  pub size: NumberAsString,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub open_interest: Option<u32>,
   #[serde(skip_serializing_if = "Option::is_none")]

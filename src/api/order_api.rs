@@ -8,12 +8,11 @@ use crate::{
     PositionIntent,
     TimeInForce,
     enums::{
-      Side,
-      Type,
+      OrderType, Side
     },
     utils::{
-      IntAsString,
       Money,
+      NumberAsString,
     },
   },
 };
@@ -182,12 +181,12 @@ impl OrderApi for Client {
 pub struct OrderRequestBody {
   pub symbol: String,
   #[serde(skip_serializing_if = "Option::is_none")]
-  pub qty: Option<IntAsString>,
+  pub qty: Option<NumberAsString>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub notional: Option<Money>,
   pub side: Side,
   #[serde(rename = "type")]
-  pub _type: Type,
+  pub _type: OrderType,
   pub time_in_force: TimeInForce,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub limit_price: Option<Money>,
@@ -265,7 +264,7 @@ pub struct GetOrderByClientIdParameter {
 
 #[derive(Debug, Serialize)]
 pub struct ReplaceOrderByIdRequestBody {
-  pub qty: IntAsString,
+  pub qty: NumberAsString,
   pub time_in_force: TimeInForce,
   pub limit_price: Money,
   pub stop_price: Money,
@@ -310,12 +309,11 @@ mod tests {
       PositionIntent,
       TimeInForce,
       enums::{
-        Side,
-        Type,
+        OrderType, Side
       },
       utils::{
-        IntAsString,
         Money,
+        NumberAsString,
       },
     },
   };
@@ -326,10 +324,10 @@ mod tests {
 
     let order_request = OrderRequestBody {
       symbol: "AAPL".to_string(),
-      qty: Some(IntAsString::from_u32(43)),
+      qty: Some(NumberAsString::from_f64(43.0)),
       notional: None,
       side: Side::Buy,
-      _type: Type::Limit,
+      _type: OrderType::Limit,
       time_in_force: TimeInForce::GTC,
       limit_price: Some(Money::from_f64(32.0)),
       stop_price: Some(Money::from_f64(43.0)),
@@ -387,7 +385,7 @@ mod tests {
   #[test]
   fn replace_order_by_id_request_body_serialization() {
     let body = ReplaceOrderByIdRequestBody {
-      qty: IntAsString::from_u32(4),
+      qty: NumberAsString::from_f64(4.0),
       time_in_force: TimeInForce::DAY,
       limit_price: Money::from_f64(100.0),
       stop_price: Money::from_f64(90.0),

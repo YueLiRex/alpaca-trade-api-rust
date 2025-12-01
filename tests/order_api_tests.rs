@@ -16,12 +16,11 @@ use alpaca_trade_api_rust::{
     PositionIntent,
     TimeInForce,
     enums::{
-      Side,
-      Type,
+      OrderType, Side
     },
     utils::{
-      IntAsString,
       Money,
+      NumberAsString,
     },
   },
 };
@@ -132,7 +131,7 @@ async fn test_get_orders_should_return_order_list() {
       );
       assert_eq!(
         orders.first().unwrap().qty.as_ref().map(|q| q.value()),
-        Some(2)
+        Some(2.0)
       );
     }
     Err(error) => {
@@ -204,10 +203,10 @@ async fn test_create_order_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
   let order_request_body = OrderRequestBody {
     symbol: "META".to_string(),
-    qty: Some(IntAsString::from_u32(43)),
+    qty: Some(NumberAsString::from_f64(43.0)),
     notional: None,
     side: Side::Buy,
-    _type: Type::Limit,
+    _type: OrderType::Limit,
     time_in_force: TimeInForce::GTC,
     limit_price: Some(Money::from_f64(32.0)),
     stop_price: Some(Money::from_f64(43.0)),
@@ -233,7 +232,7 @@ async fn test_create_order_should_return_ok() {
         order.id.to_string().as_str(),
         "de51f21a-d601-4271-9a68-e0db9748f025"
       );
-      assert_eq!(order._type, Type::Market);
+      assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
       endpoint_mock.assert();
@@ -349,7 +348,7 @@ async fn test_get_order_by_client_order_id_should_return_ok() {
         order.id.to_string().as_str(),
         "de51f21a-d601-4271-9a68-e0db9748f025"
       );
-      assert_eq!(order._type, Type::Market);
+      assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
       endpoint_mock.assert();
@@ -428,7 +427,7 @@ async fn test_get_order_by_id_should_return_ok() {
         order.id.to_string().as_str(),
         "de51f21a-d601-4271-9a68-e0db9748f025"
       );
-      assert_eq!(order._type, Type::Market);
+      assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
       endpoint_mock.assert();
@@ -499,7 +498,7 @@ async fn test_replace_order_by_id_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
   let request_body = ReplaceOrderByIdRequestBody {
-    qty: IntAsString::from_u32(4),
+    qty: NumberAsString::from_f64(4.0),
     time_in_force: TimeInForce::DAY,
     limit_price: Money::from_f64(100.0),
     stop_price: Money::from_f64(90.0),
@@ -519,7 +518,7 @@ async fn test_replace_order_by_id_should_return_ok() {
         order.id.to_string().as_str(),
         "de51f21a-d601-4271-9a68-e0db9748f025"
       );
-      assert_eq!(order._type, Type::Market);
+      assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
       endpoint_mock.assert();
