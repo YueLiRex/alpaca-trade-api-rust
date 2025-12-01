@@ -1,8 +1,8 @@
 use crate::models::{
   enums::{
     AssetClass,
-    Side,
     OrderType,
+    Side,
   },
   utils::{
     Money,

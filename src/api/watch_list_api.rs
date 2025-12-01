@@ -313,5 +313,22 @@ pub struct WatchListReqBody {
 
 #[derive(Debug, Serialize)]
 pub struct AddAssetReqBody {
-  symbol: String,
+  pub symbol: String,
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::api::WatchListReqBody;
+
+  #[test]
+  fn test_watch_list_req_body() {
+    let request_body = WatchListReqBody {
+      name: "test".to_string(),
+      symbols: vec!["META".to_string(), "GOGL".to_string()],
+    };
+
+    let serialized = serde_json::to_string(&request_body).unwrap();
+    let expected = r#"{"name":"test","symbols":["META","GOGL"]}"#;
+    assert_eq!(serialized, expected)
+  }
 }

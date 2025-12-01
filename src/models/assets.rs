@@ -4,7 +4,7 @@ use crate::models::{
     Exchange,
     Status,
   },
-  utils::deserialize_str_to_u16,
+  utils::NumberAsString,
 };
 use serde::{
   Deserialize,
@@ -16,6 +16,7 @@ use uuid::Uuid;
 pub struct Asset {
   pub id: Uuid,
   pub class: AssetClass,
+  pub cusip: String,
   pub exchange: Exchange,
   pub symbol: String,
   pub name: String,
@@ -23,11 +24,8 @@ pub struct Asset {
   pub tradable: bool,
   pub marginable: bool,
   pub shortable: bool,
-  pub maintenance_margin_requirement: u16,
-  #[serde(deserialize_with = "deserialize_str_to_u16")]
-  pub margin_requirement_long: u16,
-  #[serde(deserialize_with = "deserialize_str_to_u16")]
-  pub margin_requirement_short: u16,
+  pub margin_requirement_long: Option<NumberAsString>,
+  pub margin_requirement_short: Option<NumberAsString>,
   pub easy_to_borrow: bool,
   pub fractionable: bool,
   pub attributes: Vec<String>,

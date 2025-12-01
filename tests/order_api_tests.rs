@@ -16,7 +16,8 @@ use alpaca_trade_api_rust::{
     PositionIntent,
     TimeInForce,
     enums::{
-      OrderType, Side
+      OrderType,
+      Side,
     },
     utils::{
       Money,

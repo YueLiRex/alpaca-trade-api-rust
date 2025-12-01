@@ -1,13 +1,23 @@
 use crate::models::{
-  Order, OrderClass, OrderStatus, TimeInForce, enums::{
+  Order,
+  OrderClass,
+  OrderStatus,
+  TimeInForce,
+  enums::{
     AssetClass,
-    Exchange, OrderType, Side,
-  }, utils::{
+    Exchange,
+    OrderType,
+    Side,
+  },
+  utils::{
     Money,
     NumberAsString,
-  }
+  },
 };
-use chrono::{DateTime, Utc};
+use chrono::{
+  DateTime,
+  Utc,
+};
 use serde::{
   Deserialize,
   Serialize,
@@ -70,7 +80,7 @@ pub struct ClosedPosition {
   pub trail_price: Option<Money>,
   pub hwm: Option<Money>,
   pub position_intent: String,
-  pub legs: Option<Vec<Order>>
+  pub legs: Option<Vec<Order>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

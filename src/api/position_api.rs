@@ -7,11 +7,7 @@ use crate::{
     Position,
   },
 };
-use anyhow::{
-  anyhow,
-  bail,
-};
-use core::error;
+use anyhow::bail;
 use serde::{
   Deserialize,
   Serialize,
@@ -133,8 +129,16 @@ impl PositionApi for Client {
     let url = format!("{}/v2/positions/{}/exercise", self.base_url, symbol_or_id);
     let response = self.client.post(url).send().await?;
     match response.status() {
-      status if status.is_client_error() => bail!("Failed to exercise option contract {}: HTTP {}",symbol_or_id, status),
-      status if status.is_server_error() => bail!("Server error when exercising option contract {}: HTTP {}", symbol_or_id, status),
+      status if status.is_client_error() => bail!(
+        "Failed to exercise option contract {}: HTTP {}",
+        symbol_or_id,
+        status
+      ),
+      status if status.is_server_error() => bail!(
+        "Server error when exercising option contract {}: HTTP {}",
+        symbol_or_id,
+        status
+      ),
       _ => Ok(()),
     }
   }

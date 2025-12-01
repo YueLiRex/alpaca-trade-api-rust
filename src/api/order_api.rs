@@ -8,7 +8,8 @@ use crate::{
     PositionIntent,
     TimeInForce,
     enums::{
-      OrderType, Side
+      OrderType,
+      Side,
     },
     utils::{
       Money,
@@ -309,7 +310,8 @@ mod tests {
       PositionIntent,
       TimeInForce,
       enums::{
-        OrderType, Side
+        OrderType,
+        Side,
       },
       utils::{
         Money,

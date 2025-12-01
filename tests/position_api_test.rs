@@ -8,7 +8,8 @@ use alpaca_trade_api_rust::{
 use httpmock::{
   Method::{
     DELETE,
-    GET, POST,
+    GET,
+    POST,
   },
   MockServer,
 };
@@ -325,7 +326,10 @@ async fn test_close_open_position_by_symbol_or_id_should_return_ok() {
     .await
   {
     Ok(positions) => {
-      assert_eq!(positions.id, Uuid::from_str("a049613c-2dc6-4fca-ad6a-ccf376d612e2").unwrap());
+      assert_eq!(
+        positions.id,
+        Uuid::from_str("a049613c-2dc6-4fca-ad6a-ccf376d612e2").unwrap()
+      );
       assert_eq!(positions.legs.map(|legs| legs.len()).unwrap_or(0), 1)
     }
     Err(error) => {
@@ -347,15 +351,16 @@ async fn test_exercise_options_position_should_return_ok() {
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/positions/META/exercise");
 
-    then
-      .status(200)
-      .header("Content-Type", "application/json");
+    then.status(200).header("Content-Type", "application/json");
   });
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client.exercise_option_contract_by_symbol_or_id("META").await {
+  match api_client
+    .exercise_option_contract_by_symbol_or_id("META")
+    .await
+  {
     Ok(_) => {
       endpoint_mock.assert();
     }
