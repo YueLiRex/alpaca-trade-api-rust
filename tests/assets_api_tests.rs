@@ -99,7 +99,7 @@ async fn test_get_assets_should_return_assets() {
 
       match first_opt {
         Some(asset) => {
-          // assert!(asset.attributes.is_empty(), "attributes is not empty");
+          assert!(asset.attributes.is_empty(), "attributes is not empty");
         }
         None => panic!("Expect an asset, but None returned."),
       }

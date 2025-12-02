@@ -6,7 +6,6 @@ use alpaca_trade_api_rust::{
   },
   prelude::Client,
 };
-use chrono::serde::ts_seconds;
 use httpmock::{
   Method::{
     DELETE,
