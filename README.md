@@ -8,7 +8,7 @@
 [![PRs](https://img.shields.io/github/issues-pr/YueLiRex/alpaca-trade-api-rust.svg)](https://github.com/YueLiRex/alpaca-trade-api-rust/pulls)
 [![Build](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/main.yml)
 
-Alpaca-trade-api-rust as the name stats. It is a rust implementation of [alpaca trading api](https://docs.alpaca.markets/reference/issuetokens). It allows you interact with alpaca with its restful api.
+Alpaca-trade-api-rust as the name suggests. It is a Rust implementation of [alpaca trading api](https://docs.alpaca.markets/reference/issuetokens). It allows you to interact with alpaca with its restful api.
 
 ## How to use it
 1. Initialize alpaca client with api key and api secret
@@ -25,5 +25,5 @@ let client = Client::new(
 ```rust
 let watch_list = client.create_watch_list(request_body).await?;
 ```
-
-Welcome to submit a issue to li.yue.rex@gmail.com
+This repo is still in development.
+Welcome to submit an issue to li.yue.rex@gmail.com
