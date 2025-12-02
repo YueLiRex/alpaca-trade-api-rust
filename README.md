@@ -6,7 +6,7 @@
 [![Stars](https://img.shields.io/github/stars/YueLiRex/alpaca-trade-api-rust.svg)](https://github.com/YueLiRex/alpaca-trade-api-rust/stargazers)
 [![Issues](https://img.shields.io/github/issues/YueLiRex/alpaca-trade-api-rust.svg)](https://github.com/YueLiRex/alpaca-trade-api-rust/issues)
 [![PRs](https://img.shields.io/github/issues-pr/YueLiRex/alpaca-trade-api-rust.svg)](https://github.com/YueLiRex/alpaca-trade-api-rust/pulls)
-[![Build](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/main.yml)
+[![Build](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/release.yml/badge.svg?branch=release)](https://github.com/YueLiRex/alpaca-trade-api-rust/actions/workflows/release.yml)
 
 Alpaca-trade-api-rust as the name suggests. It is a Rust implementation of [alpaca trading api](https://docs.alpaca.markets/reference/issuetokens). It allows you to interact with alpaca with its restful api.
 

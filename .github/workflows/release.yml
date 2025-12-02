@@ -1,10 +1,10 @@
-name: Dev Test
+name: Release
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "release" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "release" ]
 
 env:
   CARGO_TERM_COLOR: always
