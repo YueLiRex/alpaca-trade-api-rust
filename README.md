@@ -1,0 +1,1 @@
+[![Coverage](https://img.shields.io/codecov/c/github/YueLiRex/alpaca-trade-api-rust)](https://codecov.io/gh/YueLiRex/alpaca-trade-api-rust)
