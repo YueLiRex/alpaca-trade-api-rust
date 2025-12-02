@@ -23,7 +23,26 @@ let client = Client::new(
 ```
 2. Call alpaca trading api
 ```rust
-let watch_list = client.create_watch_list(request_body).await?;
+
+let orders_query = AllOrdersQueryParameter {
+  status: Some(OrderStatus::Open),
+  limit: Some(50),
+  after: None,
+  until: None,
+  direction: Some(OrdersDirection::Desc),
+  nested: Some(true),
+  symbols: Some(ComaSeparatedStrings {
+    values: vec!["AAPL", "TSLA"],
+  }),
+  side: None,
+  asset_class: Some(ComaSeparatedStrings {
+    values: vec!["us_option", "crypto"],
+  }),
+  before_order_id: None,
+  after_order_id: None,
+};
+
+client.get_all_orders(&orders_query).await?
 ```
 This repo is still in development.
 Welcome to submit an issue to li.yue.rex@gmail.com
