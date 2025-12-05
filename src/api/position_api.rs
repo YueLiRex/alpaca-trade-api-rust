@@ -17,10 +17,7 @@ use std::collections::HashMap;
 pub trait PositionApi {
   fn get_all_open_positions(&self) -> impl Future<Output = anyhow::Result<Vec<Position>>>;
 
-  fn get_open_position_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> impl Future<Output = anyhow::Result<Position>>;
+  fn get_open_position_by_symbol_or_id(&self, symbol_or_id: &str) -> impl Future<Output = anyhow::Result<Position>>;
 
   fn close_open_position_by_symbol_or_id(
     &self,
@@ -28,10 +25,7 @@ pub trait PositionApi {
     param: ClosePositionParam,
   ) -> impl Future<Output = anyhow::Result<ClosedPosition>>;
 
-  fn exercise_option_contract_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> impl Future<Output = anyhow::Result<()>>;
+  fn exercise_option_contract_by_symbol_or_id(&self, symbol_or_id: &str) -> impl Future<Output = anyhow::Result<()>>;
 
   fn clost_all_open_positions(
     &self,
@@ -57,10 +51,7 @@ impl PositionApi for Client {
     }
   }
 
-  async fn clost_all_open_positions(
-    &self,
-    cancel_orders: bool,
-  ) -> anyhow::Result<Vec<ClosePositionInfo>> {
+  async fn clost_all_open_positions(&self, cancel_orders: bool) -> anyhow::Result<Vec<ClosePositionInfo>> {
     let url = format!("{}/v2/positions", self.base_url);
     let mut param = HashMap::new();
     param.insert("cancel_orders", &cancel_orders);
@@ -79,10 +70,7 @@ impl PositionApi for Client {
     }
   }
 
-  async fn get_open_position_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> anyhow::Result<Position> {
+  async fn get_open_position_by_symbol_or_id(&self, symbol_or_id: &str) -> anyhow::Result<Position> {
     let url = format!("{}/v2/positions/{}", self.base_url, symbol_or_id);
     match self.client.get(url).send().await {
       Ok(resp) => {
@@ -122,18 +110,13 @@ impl PositionApi for Client {
     }
   }
 
-  async fn exercise_option_contract_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> anyhow::Result<()> {
+  async fn exercise_option_contract_by_symbol_or_id(&self, symbol_or_id: &str) -> anyhow::Result<()> {
     let url = format!("{}/v2/positions/{}/exercise", self.base_url, symbol_or_id);
     let response = self.client.post(url).send().await?;
     match response.status() {
-      status if status.is_client_error() => bail!(
-        "Failed to exercise option contract {}: HTTP {}",
-        symbol_or_id,
-        status
-      ),
+      status if status.is_client_error() => {
+        bail!("Failed to exercise option contract {}: HTTP {}", symbol_or_id, status)
+      }
       status if status.is_server_error() => bail!(
         "Server error when exercising option contract {}: HTTP {}",
         symbol_or_id,

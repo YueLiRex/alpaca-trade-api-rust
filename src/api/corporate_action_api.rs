@@ -15,10 +15,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 pub trait CorporateActionApi {
-  fn get_specific_corporate_actions(
-    &self,
-    uuid: &Uuid,
-  ) -> impl Future<Output = anyhow::Result<CorporateAction>>;
+  fn get_specific_corporate_actions(&self, uuid: &Uuid) -> impl Future<Output = anyhow::Result<CorporateAction>>;
 
   fn get_corporate_actions(
     &self,
@@ -29,10 +26,7 @@ pub trait CorporateActionApi {
 impl CorporateActionApi for Client {
   async fn get_specific_corporate_actions(&self, uuid: &Uuid) -> anyhow::Result<CorporateAction> {
     let id = uuid.to_string();
-    let url = format!(
-      "{}/v2/corporate_actions/announcements/{}",
-      self.base_url, id
-    );
+    let url = format!("{}/v2/corporate_actions/announcements/{}", self.base_url, id);
     match self.client.get(url).send().await {
       Ok(response) => {
         if response.status().is_success() {
@@ -112,7 +106,8 @@ mod tests {
       date_type: Some(CorporateActionsDateType::DeclarationDate),
     };
     let json = serde_json::to_string(parameter).unwrap();
-    let expected = r#"{"ca_types":"dividend,merger","since":"2025-01-30","until":"2025-03-30","date_type":"declaration_date"}"#;
+    let expected =
+      r#"{"ca_types":"dividend,merger","since":"2025-01-30","until":"2025-03-30","date_type":"declaration_date"}"#;
     assert_eq!(json, expected)
   }
 }

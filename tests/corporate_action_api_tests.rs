@@ -26,11 +26,8 @@ async fn test_get_corporate_actions_should_return_actions() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/corporate_actions/announcements");
-    then
-      .status(200)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"[
+    then.status(200).header("Content-Type", "application/json").body(
+      r#"[
             {
               "id": "d99eb57c-19b4-40b9-ab1e-a0971bf5f288",
               "corporate_action_id": "2829511",
@@ -77,7 +74,7 @@ async fn test_get_corporate_actions_should_return_actions() {
               "new_rate": "1"
             }
           ]"#,
-      );
+    );
   });
 
   let base_url = mockserver.base_url();
@@ -100,10 +97,7 @@ async fn test_get_corporate_actions_should_return_actions() {
 
       match first_opt {
         Some(action) => {
-          assert_eq!(
-            action.effective_date,
-            Some(NaiveDate::from_str("2025-01-02").unwrap())
-          )
+          assert_eq!(action.effective_date, Some(NaiveDate::from_str("2025-01-02").unwrap()))
         }
         None => panic!("Expect an asset, but None returned."),
       }
@@ -127,11 +121,8 @@ async fn test_get_specific_corporate_actions_should_return_action() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/corporate_actions/announcements/d99eb57c-19b4-40b9-ab1e-a0971bf5f288");
-    then
-      .status(200)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"{
+    then.status(200).header("Content-Type", "application/json").body(
+      r#"{
           "id": "d99eb57c-19b4-40b9-ab1e-a0971bf5f288",
           "corporate_action_id": "2829511",
           "ca_type": "merger",
@@ -146,23 +137,18 @@ async fn test_get_specific_corporate_actions_should_return_action() {
           "old_rate": "1",
           "new_rate": "0.83"
         }"#,
-      );
+    );
   });
 
   let base_url = mockserver.base_url();
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api
-    .get_specific_corporate_actions(
-      &Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap(),
-    )
+    .get_specific_corporate_actions(&Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap())
     .await
   {
     Ok(action) => {
-      assert_eq!(
-        action.effective_date,
-        Some(NaiveDate::from_str("2025-01-02").unwrap())
-      )
+      assert_eq!(action.effective_date, Some(NaiveDate::from_str("2025-01-02").unwrap()))
     }
     Err(e) => {
       asset_api_mock.assert();
@@ -183,24 +169,19 @@ async fn test_get_specific_corporate_actions_should_return_error_response() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/corporate_actions/announcements/d99eb57c-19b4-40b9-ab1e-a0971bf5f288");
-    then
-      .status(404)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"{
+    then.status(404).header("Content-Type", "application/json").body(
+      r#"{
           "code": 40410000,
           "message": "resource not found"
         }"#,
-      );
+    );
   });
 
   let base_url = mockserver.base_url();
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api
-    .get_specific_corporate_actions(
-      &Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap(),
-    )
+    .get_specific_corporate_actions(&Uuid::from_str("d99eb57c-19b4-40b9-ab1e-a0971bf5f288").unwrap())
     .await
   {
     Ok(_) => {

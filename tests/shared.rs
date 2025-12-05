@@ -16,14 +16,8 @@ impl<'tst> TestContext<'tst> {
     }
   }
 
-  pub async fn setup_endpoint<Fn, Fut>(
-    &self,
-    method: Method,
-    path: &str,
-    status: u16,
-    body: &str,
-    assertion: Fn,
-  ) where
+  pub async fn setup_endpoint<Fn, Fut>(&self, method: Method, path: &str, status: u16, body: &str, assertion: Fn)
+  where
     Fn: FnOnce(&'tst Client) -> Fut,
     Fut: Future<Output = ()>,
   {

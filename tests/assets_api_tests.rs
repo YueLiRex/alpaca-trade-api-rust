@@ -39,11 +39,8 @@ async fn test_get_assets_should_return_assets() {
       .query_param("asset_class", "us_equity")
       .query_param("exchange", "NASDAQ")
       .query_param("attributes", "has_options,ipo,ptp_no_exception");
-    then
-      .status(200)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"[
+    then.status(200).header("Content-Type", "application/json").body(
+      r#"[
           {
             "id": "9debbce9-2270-4e40-946a-bdea8ffc1ad3",
             "class": "us_equity",
@@ -79,7 +76,7 @@ async fn test_get_assets_should_return_assets() {
             "attributes": []
           }
           ]"#,
-      );
+    );
   });
 
   let base_url = mockserver.base_url();
@@ -123,11 +120,8 @@ async fn test_get_asset_by_symbol_or_id_should_return_asset() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/assets/AAPL");
-    then
-      .status(200)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"
+    then.status(200).header("Content-Type", "application/json").body(
+      r#"
         {
           "id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
           "class": "us_equity",
@@ -149,7 +143,7 @@ async fn test_get_asset_by_symbol_or_id_should_return_asset() {
           ]
         }
       "#,
-      );
+    );
   });
 
   let base_url = mock_server.base_url();
@@ -187,15 +181,12 @@ async fn test_get_asset_by_symbol_or_id_should_return_error_response() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/assets/FAKE");
-    then
-      .status(404)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"{
+    then.status(404).header("Content-Type", "application/json").body(
+      r#"{
             "code": 40410000,
             "message": "asset not found for FAKE"
           }"#,
-      );
+    );
   });
 
   let base_url = mock_server.base_url();

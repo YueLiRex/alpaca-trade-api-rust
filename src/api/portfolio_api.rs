@@ -79,10 +79,7 @@ pub enum CashflowTypes {
 
 #[derive(Debug, Serialize)]
 pub struct PortfolioHistoryQueryParameter {
-  #[serde(
-    skip_serializing_if = "Option::is_none",
-    serialize_with = "serialize_history_period"
-  )]
+  #[serde(skip_serializing_if = "Option::is_none", serialize_with = "serialize_history_period")]
   pub period: Option<HistoryPeriod>,
   #[serde(
     skip_serializing_if = "Option::is_none",
@@ -99,17 +96,11 @@ pub struct PortfolioHistoryQueryParameter {
   pub end: Option<DateTime<Utc>>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub extended_hours: Option<String>,
-  #[serde(
-    skip_serializing_if = "Option::is_none",
-    serialize_with = "serialize_cashflow_types"
-  )]
+  #[serde(skip_serializing_if = "Option::is_none", serialize_with = "serialize_cashflow_types")]
   pub cashflow_types: Option<CashflowTypes>,
 }
 
-pub fn serialize_history_period<S>(
-  period: &Option<HistoryPeriod>,
-  serializer: S,
-) -> Result<S::Ok, S::Error>
+pub fn serialize_history_period<S>(period: &Option<HistoryPeriod>, serializer: S) -> Result<S::Ok, S::Error>
 where
   S: serde::Serializer,
 {
@@ -127,10 +118,7 @@ where
   }
 }
 
-fn serialize_history_timeframe<S>(
-  timeframe: &Option<HistoryTimeFrame>,
-  serializer: S,
-) -> Result<S::Ok, S::Error>
+fn serialize_history_timeframe<S>(timeframe: &Option<HistoryTimeFrame>, serializer: S) -> Result<S::Ok, S::Error>
 where
   S: serde::Serializer,
 {
@@ -147,10 +135,7 @@ where
   }
 }
 
-fn serialize_cashflow_types<S>(
-  cashflow_types: &Option<CashflowTypes>,
-  serializer: S,
-) -> Result<S::Ok, S::Error>
+fn serialize_cashflow_types<S>(cashflow_types: &Option<CashflowTypes>, serializer: S) -> Result<S::Ok, S::Error>
 where
   S: serde::Serializer,
 {

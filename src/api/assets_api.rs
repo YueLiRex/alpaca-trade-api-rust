@@ -17,15 +17,9 @@ use anyhow::bail;
 use serde::Serialize;
 
 pub trait AssetsApi {
-  fn get_assets(
-    &self,
-    query_parameter: &AssetsQueryParameter,
-  ) -> impl Future<Output = anyhow::Result<Vec<Asset>>>;
+  fn get_assets(&self, query_parameter: &AssetsQueryParameter) -> impl Future<Output = anyhow::Result<Vec<Asset>>>;
 
-  fn get_asset_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> impl Future<Output = anyhow::Result<Asset>>;
+  fn get_asset_by_symbol_or_id(&self, symbol_or_id: &str) -> impl Future<Output = anyhow::Result<Asset>>;
 }
 
 impl AssetsApi for Client {

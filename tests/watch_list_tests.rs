@@ -444,10 +444,7 @@ async fn test_get_watch_list_by_name_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client
-    .get_watch_list_by_name("test-name".to_string())
-    .await
-  {
+  match api_client.get_watch_list_by_name("test-name".to_string()).await {
     Ok(watchlist) => {
       assert_eq!(
         watchlist.id,
@@ -630,10 +627,7 @@ async fn test_delete_watch_list_by_name_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client
-    .delete_watch_list_by_name("test-name".to_string())
-    .await
-  {
+  match api_client.delete_watch_list_by_name("test-name".to_string()).await {
     Ok(_) => {
       endpoint_mock.assert();
     }
