@@ -2,6 +2,14 @@
 name = "alpaca-trade-api-rust"
 version = "0.0.1"
 edition = "2024"
+authors = ["Yue Li <li.yue.rex@gmail.com>"]
+description = "The Alpaca trading api client implement in Rust."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/YueLiRex/alpaca-trade-api-rust"
+homepage = "https://github.com/YueLiRex/alpaca-trade-api-rust"
+keywords = ["finance", "trading", "finance-trading", "algorithmic-trading", "api-client"]
+categories = ["finance", "http-client"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
