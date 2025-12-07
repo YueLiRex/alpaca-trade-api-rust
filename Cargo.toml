@@ -30,3 +30,8 @@ httpmock = "0.8.2"
 
 [lib]
 name = "alpaca_trade_api_rust"
+
+[profile.release]
+opt-level = 3
+panic = "abort"
+strip = "symbols"
