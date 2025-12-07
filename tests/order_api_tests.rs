@@ -326,7 +326,7 @@ async fn test_get_order_by_client_order_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .get_order_by_client_order_id(String::from("76496f38-94a0-460c-ba00-d1fef33b884a"))
+    .get_order_by_client_order_id("76496f38-94a0-460c-ba00-d1fef33b884a")
     .await
   {
     Ok(order) => {
@@ -402,7 +402,7 @@ async fn test_get_order_by_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .get_order_by_id(Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
+    .get_order_by_id(&Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
     .await
   {
     Ok(order) => {
@@ -477,7 +477,7 @@ async fn test_replace_order_by_id_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let request_body = ReplaceOrderByIdRequestBody {
+  let request_body = &ReplaceOrderByIdRequestBody {
     qty: NumberAsString::from_f64(4.0),
     time_in_force: TimeInForce::DAY,
     limit_price: Money::from_f64(100.0),
@@ -488,7 +488,7 @@ async fn test_replace_order_by_id_should_return_ok() {
 
   match api_client
     .replace_order_by_id(
-      Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap(),
+      &Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap(),
       request_body,
     )
     .await
@@ -520,7 +520,7 @@ async fn test_delete_order_by_id_should_return_ok() {
       "",
       |client| async move {
         match client
-          .delete_order_by_id(Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
+          .delete_order_by_id(&Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
           .await
         {
           Ok(result) => {

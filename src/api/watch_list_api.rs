@@ -19,44 +19,44 @@ use uuid::Uuid;
 pub trait WatchListApi {
   fn get_all_watch_lists(&self) -> impl Future<Output = anyhow::Result<Vec<BasicWatchListInfo>>>;
 
-  fn create_watch_list(&self, request_body: WatchListReqBody) -> impl Future<Output = anyhow::Result<WatchList>>;
+  fn create_watch_list(&self, request_body: &WatchListReqBody) -> impl Future<Output = anyhow::Result<WatchList>>;
 
-  fn get_watch_list_by_id(&self, watchlist_id: Uuid) -> impl Future<Output = anyhow::Result<WatchList>>;
+  fn get_watch_list_by_id(&self, watchlist_id: &Uuid) -> impl Future<Output = anyhow::Result<WatchList>>;
 
   fn update_watch_list_by_id(
     &self,
-    watchlist_id: Uuid,
-    request_body: WatchListReqBody,
+    watchlist_id: &Uuid,
+    request_body: &WatchListReqBody,
   ) -> impl Future<Output = anyhow::Result<WatchList>>;
 
   fn add_asset_to_watch_list(
     &self,
-    watchlist_id: Uuid,
-    symbol: AddAssetReqBody,
+    watchlist_id: &Uuid,
+    symbol: &AddAssetReqBody,
   ) -> impl Future<Output = anyhow::Result<WatchList>>;
 
-  fn delete_watch_list_by_id(&self, watchlist_id: Uuid) -> impl Future<Output = anyhow::Result<()>>;
+  fn delete_watch_list_by_id(&self, watchlist_id: &Uuid) -> impl Future<Output = anyhow::Result<()>>;
 
-  fn get_watch_list_by_name(&self, watchlist_name: String) -> impl Future<Output = anyhow::Result<WatchList>>;
+  fn get_watch_list_by_name(&self, watchlist_name: &str) -> impl Future<Output = anyhow::Result<WatchList>>;
 
   fn update_watch_list_by_name(
     &self,
-    watchlist_name: String,
-    request_body: WatchListReqBody,
+    watchlist_name: &str,
+    request_body: &WatchListReqBody,
   ) -> impl Future<Output = anyhow::Result<WatchList>>;
 
   fn add_asset_to_watch_list_by_name(
     &self,
-    watchlist_name: String,
-    symbol: AddAssetReqBody,
+    watchlist_name: &str,
+    symbol: &AddAssetReqBody,
   ) -> impl Future<Output = anyhow::Result<WatchList>>;
 
-  fn delete_watch_list_by_name(&self, name: String) -> impl Future<Output = anyhow::Result<()>>;
+  fn delete_watch_list_by_name(&self, name: &str) -> impl Future<Output = anyhow::Result<()>>;
 
   fn delete_asset_from_watch_list(
     &self,
-    watchlist_id: Uuid,
-    symbol: String,
+    watchlist_id: &Uuid,
+    symbol: &str,
   ) -> impl Future<Output = anyhow::Result<WatchList>>;
 }
 
@@ -77,7 +77,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn create_watch_list(&self, request_body: WatchListReqBody) -> anyhow::Result<WatchList> {
+  async fn create_watch_list(&self, request_body: &WatchListReqBody) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists", self.base_url);
 
     match self.client.post(url).json(&request_body).send().await {
@@ -94,7 +94,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn get_watch_list_by_id(&self, watchlist_id: Uuid) -> anyhow::Result<WatchList> {
+  async fn get_watch_list_by_id(&self, watchlist_id: &Uuid) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists/{}", self.base_url, watchlist_id);
     match self.client.get(url).send().await {
       Ok(response) => {
@@ -112,8 +112,8 @@ impl WatchListApi for Client {
 
   async fn update_watch_list_by_id(
     &self,
-    watchlist_id: Uuid,
-    request_body: WatchListReqBody,
+    watchlist_id: &Uuid,
+    request_body: &WatchListReqBody,
   ) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists/{}", self.base_url, watchlist_id);
     match self.client.put(url).json(&request_body).send().await {
@@ -130,7 +130,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn add_asset_to_watch_list(&self, watchlist_id: Uuid, symbol: AddAssetReqBody) -> anyhow::Result<WatchList> {
+  async fn add_asset_to_watch_list(&self, watchlist_id: &Uuid, symbol: &AddAssetReqBody) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists/{}", self.base_url, watchlist_id);
     match self.client.post(url).json(&symbol).send().await {
       Ok(response) => {
@@ -146,7 +146,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn delete_watch_list_by_id(&self, watchlist_id: Uuid) -> anyhow::Result<()> {
+  async fn delete_watch_list_by_id(&self, watchlist_id: &Uuid) -> anyhow::Result<()> {
     let url = format!("{}/v2/watchlists/{}", self.base_url, watchlist_id);
     match self.client.delete(url).send().await {
       Ok(response) => {
@@ -161,7 +161,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn get_watch_list_by_name(&self, watchlist_name: String) -> anyhow::Result<WatchList> {
+  async fn get_watch_list_by_name(&self, watchlist_name: &str) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists:by_name", self.base_url);
     match self.client.get(url).query(&vec![("name", watchlist_name)]).send().await {
       Ok(response) => {
@@ -179,8 +179,8 @@ impl WatchListApi for Client {
 
   async fn update_watch_list_by_name(
     &self,
-    watchlist_name: String,
-    request_body: WatchListReqBody,
+    watchlist_name: &str,
+    request_body: &WatchListReqBody,
   ) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists:by_name", self.base_url);
     match self
@@ -206,8 +206,8 @@ impl WatchListApi for Client {
 
   async fn add_asset_to_watch_list_by_name(
     &self,
-    watchlist_name: String,
-    symbol: AddAssetReqBody,
+    watchlist_name: &str,
+    symbol: &AddAssetReqBody,
   ) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists:by_name", self.base_url);
     match self
@@ -231,7 +231,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn delete_watch_list_by_name(&self, name: String) -> anyhow::Result<()> {
+  async fn delete_watch_list_by_name(&self, name: &str) -> anyhow::Result<()> {
     let url = format!("{}/v2/watchlists:by_name", self.base_url);
     match self.client.delete(url).query(&vec![("name", name)]).send().await {
       Ok(response) => {
@@ -246,7 +246,7 @@ impl WatchListApi for Client {
     }
   }
 
-  async fn delete_asset_from_watch_list(&self, watchlist_id: Uuid, symbol: String) -> anyhow::Result<WatchList> {
+  async fn delete_asset_from_watch_list(&self, watchlist_id: &Uuid, symbol: &str) -> anyhow::Result<WatchList> {
     let url = format!("{}/v2/watchlists/{}/{}", self.base_url, watchlist_id, symbol);
     match self.client.delete(url).send().await {
       Ok(response) => {

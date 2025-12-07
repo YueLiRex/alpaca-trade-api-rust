@@ -15,14 +15,14 @@ use serde::Serialize;
 pub trait PortfolioHistoryApi {
   fn get_portfolio_history(
     &self,
-    query_params: PortfolioHistoryQueryParameter,
+    query_params: &PortfolioHistoryQueryParameter,
   ) -> impl Future<Output = anyhow::Result<PortfolioHistory>>;
 }
 
 impl PortfolioHistoryApi for Client {
   async fn get_portfolio_history(
     &self,
-    query_params: PortfolioHistoryQueryParameter,
+    query_params: &PortfolioHistoryQueryParameter,
   ) -> anyhow::Result<PortfolioHistory> {
     let url = format!("{}/v2/account/portfolio/history", self.base_url);
     match self.client.get(url).query(&query_params).send().await {

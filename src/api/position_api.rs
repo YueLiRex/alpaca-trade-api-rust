@@ -22,7 +22,7 @@ pub trait PositionApi {
   fn close_open_position_by_symbol_or_id(
     &self,
     symbol_or_id: &str,
-    param: ClosePositionParam,
+    param: &ClosePositionParam,
   ) -> impl Future<Output = anyhow::Result<ClosedPosition>>;
 
   fn exercise_option_contract_by_symbol_or_id(&self, symbol_or_id: &str) -> impl Future<Output = anyhow::Result<()>>;
@@ -89,7 +89,7 @@ impl PositionApi for Client {
   async fn close_open_position_by_symbol_or_id(
     &self,
     symbol_or_id: &str,
-    param: ClosePositionParam,
+    param: &ClosePositionParam,
   ) -> anyhow::Result<ClosedPosition> {
     let url = format!("{}/v2/positions/{}", self.base_url, symbol_or_id);
     let query_param = match param {

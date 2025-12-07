@@ -63,7 +63,7 @@ async fn get_portfolio_should_return_ok() {
 
   let start = Utc.with_ymd_and_hms(2025, 1, 21, 5, 32, 12).unwrap();
   let end = Utc.with_ymd_and_hms(2025, 2, 21, 5, 32, 12).unwrap();
-  let query_params = PortfolioHistoryQueryParameter {
+  let query_params = &PortfolioHistoryQueryParameter {
     period: Some(HistoryPeriod::Day(30)),
     timeframe: Some(HistoryTimeFrame::Minute(5)),
     intraday_reporting: Some(IntradayReporting::MarketHours),
