@@ -15,7 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Install cargo-release
+      run: |
+        if ! command -v cargo-release &> /dev/null; then
+          echo "Installing cargo-release..."
+          cargo install cargo-release
+        else
+          INSTALLED_VERSION=$(cargo release --version || echo "unknown")
+          echo "cargo-release already installed (version: $INSTALLED_VERSION). Skipping installation."
+        fi    
     - name: Build
       run: cargo build --verbose
     - name: Run tests

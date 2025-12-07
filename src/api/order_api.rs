@@ -32,23 +32,19 @@ pub trait OrderApi {
     query_parameter: &AllOrdersQueryParameter,
   ) -> impl Future<Output = anyhow::Result<Vec<Order>>>;
 
-  fn delete_all_orders(&self)
-  -> impl Future<Output = anyhow::Result<Vec<DeleteAllOrdersResponse>>>;
+  fn delete_all_orders(&self) -> impl Future<Output = anyhow::Result<Vec<DeleteAllOrdersResponse>>>;
 
-  fn get_order_by_client_order_id(
-    &self,
-    client_order_id: String,
-  ) -> impl Future<Output = anyhow::Result<Order>>;
+  fn get_order_by_client_order_id(&self, client_order_id: &str) -> impl Future<Output = anyhow::Result<Order>>;
 
-  fn get_order_by_id(&self, id: Uuid) -> impl Future<Output = anyhow::Result<Order>>;
+  fn get_order_by_id(&self, id: &Uuid) -> impl Future<Output = anyhow::Result<Order>>;
 
   fn replace_order_by_id(
     &self,
-    order_id: uuid::Uuid,
-    order: ReplaceOrderByIdRequestBody,
+    order_id: &Uuid,
+    order: &ReplaceOrderByIdRequestBody,
   ) -> impl Future<Output = anyhow::Result<Order>>;
 
-  fn delete_order_by_id(&self, order_id: uuid::Uuid) -> impl Future<Output = anyhow::Result<()>>;
+  fn delete_order_by_id(&self, order_id: &Uuid) -> impl Future<Output = anyhow::Result<()>>;
 }
 
 impl OrderApi for Client {
@@ -68,10 +64,7 @@ impl OrderApi for Client {
     }
   }
 
-  async fn get_all_orders(
-    &self,
-    query_parameter: &AllOrdersQueryParameter,
-  ) -> anyhow::Result<Vec<Order>> {
+  async fn get_all_orders(&self, query_parameter: &AllOrdersQueryParameter) -> anyhow::Result<Vec<Order>> {
     let url = format!("{}/v2/orders", self.base_url);
     match self.client.get(url).query(query_parameter).send().await {
       Ok(response) => {
@@ -103,7 +96,7 @@ impl OrderApi for Client {
     }
   }
 
-  async fn get_order_by_client_order_id(&self, client_order_id: String) -> anyhow::Result<Order> {
+  async fn get_order_by_client_order_id(&self, client_order_id: &str) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders:by_client_order_id", self.base_url);
     let query_param = GetOrderByClientIdParameter { client_order_id };
     match self.client.get(url).query(&query_param).send().await {
@@ -120,7 +113,7 @@ impl OrderApi for Client {
     }
   }
 
-  async fn get_order_by_id(&self, order_id: Uuid) -> anyhow::Result<Order> {
+  async fn get_order_by_id(&self, order_id: &Uuid) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
     match self.client.get(url).send().await {
       Ok(response) => {
@@ -138,17 +131,11 @@ impl OrderApi for Client {
 
   async fn replace_order_by_id(
     &self,
-    order_id: uuid::Uuid,
-    replace_order_body: ReplaceOrderByIdRequestBody,
+    order_id: &Uuid,
+    replace_order_body: &ReplaceOrderByIdRequestBody,
   ) -> anyhow::Result<Order> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
-    match self
-      .client
-      .patch(url)
-      .json(&replace_order_body)
-      .send()
-      .await
-    {
+    match self.client.patch(url).json(&replace_order_body).send().await {
       Ok(response) => {
         if response.status().is_success() {
           let result = response.json::<Order>().await?;
@@ -162,7 +149,7 @@ impl OrderApi for Client {
     }
   }
 
-  async fn delete_order_by_id(&self, order_id: uuid::Uuid) -> anyhow::Result<()> {
+  async fn delete_order_by_id(&self, order_id: &Uuid) -> anyhow::Result<()> {
     let url = format!("{}/v2/orders/{}", self.base_url, order_id);
     match self.client.delete(url).send().await {
       Ok(response) => {
@@ -259,8 +246,8 @@ pub struct DeleteAllOrdersResponse {
 }
 
 #[derive(Debug, Serialize)]
-pub struct GetOrderByClientIdParameter {
-  client_order_id: String,
+pub struct GetOrderByClientIdParameter<'a> {
+  client_order_id: &'a str,
 }
 
 #[derive(Debug, Serialize)]

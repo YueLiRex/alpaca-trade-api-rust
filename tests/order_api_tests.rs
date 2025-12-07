@@ -122,18 +122,12 @@ async fn test_get_orders_should_return_order_list() {
     Ok(orders) => {
       assert_eq!(orders.len(), 1);
       assert_eq!(orders.first().unwrap().order_class, OrderClass::Empty);
-      assert_eq!(
-        orders.first().unwrap().position_intent,
-        PositionIntent::BuyToOpen
-      );
+      assert_eq!(orders.first().unwrap().position_intent, PositionIntent::BuyToOpen);
       assert_eq!(
         orders.first().unwrap().id,
         Uuid::from_str("bff50af3-8fb4-4a7e-8ffe-6527cdf6b453").unwrap()
       );
-      assert_eq!(
-        orders.first().unwrap().qty.as_ref().map(|q| q.value()),
-        Some(2.0)
-      );
+      assert_eq!(orders.first().unwrap().qty.as_ref().map(|q| q.value()), Some(2.0));
     }
     Err(error) => {
       endpoint_mock.assert();
@@ -229,10 +223,7 @@ async fn test_create_order_should_return_ok() {
 
   match api_client.create_order(&order_request_body).await {
     Ok(order) => {
-      assert_eq!(
-        order.id.to_string().as_str(),
-        "de51f21a-d601-4271-9a68-e0db9748f025"
-      );
+      assert_eq!(order.id.to_string().as_str(), "de51f21a-d601-4271-9a68-e0db9748f025");
       assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
@@ -258,24 +249,18 @@ async fn test_delete_all_orders_should_return_ok() {
     ]"#;
 
   test_context
-    .setup_endpoint(
-      DELETE,
-      "/v2/orders",
-      207,
-      response_body,
-      |client| async move {
-        match client.delete_all_orders().await {
-          Ok(result) => {
-            assert_eq!(result.len(), 1);
-            assert_eq!(
-              result[0].id.to_string().as_str(),
-              "de51f21a-d601-4271-9a68-e0db9748f025"
-            );
-          }
-          Err(err) => panic!("API call failed: {:?}", err),
+    .setup_endpoint(DELETE, "/v2/orders", 207, response_body, |client| async move {
+      match client.delete_all_orders().await {
+        Ok(result) => {
+          assert_eq!(result.len(), 1);
+          assert_eq!(
+            result[0].id.to_string().as_str(),
+            "de51f21a-d601-4271-9a68-e0db9748f025"
+          );
         }
-      },
-    )
+        Err(err) => panic!("API call failed: {:?}", err),
+      }
+    })
     .await;
 }
 
@@ -341,14 +326,11 @@ async fn test_get_order_by_client_order_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .get_order_by_client_order_id(String::from("76496f38-94a0-460c-ba00-d1fef33b884a"))
+    .get_order_by_client_order_id("76496f38-94a0-460c-ba00-d1fef33b884a")
     .await
   {
     Ok(order) => {
-      assert_eq!(
-        order.id.to_string().as_str(),
-        "de51f21a-d601-4271-9a68-e0db9748f025"
-      );
+      assert_eq!(order.id.to_string().as_str(), "de51f21a-d601-4271-9a68-e0db9748f025");
       assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
@@ -420,14 +402,11 @@ async fn test_get_order_by_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .get_order_by_id(Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
+    .get_order_by_id(&Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
     .await
   {
     Ok(order) => {
-      assert_eq!(
-        order.id.to_string().as_str(),
-        "de51f21a-d601-4271-9a68-e0db9748f025"
-      );
+      assert_eq!(order.id.to_string().as_str(), "de51f21a-d601-4271-9a68-e0db9748f025");
       assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
@@ -498,7 +477,7 @@ async fn test_replace_order_by_id_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let request_body = ReplaceOrderByIdRequestBody {
+  let request_body = &ReplaceOrderByIdRequestBody {
     qty: NumberAsString::from_f64(4.0),
     time_in_force: TimeInForce::DAY,
     limit_price: Money::from_f64(100.0),
@@ -509,16 +488,13 @@ async fn test_replace_order_by_id_should_return_ok() {
 
   match api_client
     .replace_order_by_id(
-      Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap(),
+      &Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap(),
       request_body,
     )
     .await
   {
     Ok(order) => {
-      assert_eq!(
-        order.id.to_string().as_str(),
-        "de51f21a-d601-4271-9a68-e0db9748f025"
-      );
+      assert_eq!(order.id.to_string().as_str(), "de51f21a-d601-4271-9a68-e0db9748f025");
       assert_eq!(order._type, OrderType::Market);
     }
     Err(error) => {
@@ -544,7 +520,7 @@ async fn test_delete_order_by_id_should_return_ok() {
       "",
       |client| async move {
         match client
-          .delete_order_by_id(Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
+          .delete_order_by_id(&Uuid::from_str("de51f21a-d601-4271-9a68-e0db9748f025").unwrap())
           .await
         {
           Ok(result) => {

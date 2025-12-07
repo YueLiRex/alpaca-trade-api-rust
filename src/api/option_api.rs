@@ -51,10 +51,7 @@ impl OptionApi for Client {
     }
   }
 
-  async fn get_option_contract_by_symbol_or_id(
-    &self,
-    symbol_or_id: &str,
-  ) -> anyhow::Result<OptionContract> {
+  async fn get_option_contract_by_symbol_or_id(&self, symbol_or_id: &str) -> anyhow::Result<OptionContract> {
     let url = format!("{}/v2/options/contracts/{}", self.base_url, symbol_or_id);
 
     match self.client.get(url).send().await {

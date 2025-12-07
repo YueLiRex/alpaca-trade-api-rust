@@ -114,7 +114,7 @@ async fn test_create_watch_list_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let request_body = WatchListReqBody {
+  let request_body = &WatchListReqBody {
     name: "test".to_string(),
     symbols: vec!["META".to_string(), "GOGL".to_string()],
   };
@@ -188,7 +188,7 @@ async fn test_get_watch_list_by_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .get_watch_list_by_id(Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap())
+    .get_watch_list_by_id(&Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap())
     .await
   {
     Ok(watchlist) => {
@@ -256,14 +256,14 @@ async fn test_update_watch_list_by_id_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let req_body = WatchListReqBody {
+  let req_body = &WatchListReqBody {
     name: "test-watch-list".to_string(),
     symbols: vec!["META".to_string()],
   };
 
   match api_client
     .update_watch_list_by_id(
-      Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
+      &Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
       req_body,
     )
     .await
@@ -301,7 +301,7 @@ async fn test_delete_watch_list_by_id_should_return_ok() {
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
   match api_client
-    .delete_watch_list_by_id(Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap())
+    .delete_watch_list_by_id(&Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap())
     .await
   {
     Ok(_) => {
@@ -366,13 +366,13 @@ async fn test_add_asset_to_watch_list_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let req_body = AddAssetReqBody {
+  let req_body = &AddAssetReqBody {
     symbol: "META".to_string(),
   };
 
   match api_client
     .add_asset_to_watch_list(
-      Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
+      &Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
       req_body,
     )
     .await
@@ -444,10 +444,7 @@ async fn test_get_watch_list_by_name_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client
-    .get_watch_list_by_name("test-name".to_string())
-    .await
-  {
+  match api_client.get_watch_list_by_name("test-name").await {
     Ok(watchlist) => {
       assert_eq!(
         watchlist.id,
@@ -514,13 +511,13 @@ async fn test_update_watch_list_by_name_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let req_body = WatchListReqBody {
+  let req_body = &WatchListReqBody {
     name: "test-watch-list".to_string(),
     symbols: vec!["META".to_string()],
   };
 
   match api_client
-    .update_watch_list_by_name("test-name".to_string(), req_body)
+    .update_watch_list_by_name("test-name", req_body)
     .await
   {
     Ok(watchlist) => {
@@ -589,12 +586,12 @@ async fn test_add_asset_to_watch_list_by_name_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let req_body = AddAssetReqBody {
+  let req_body = &AddAssetReqBody {
     symbol: "META".to_string(),
   };
 
   match api_client
-    .add_asset_to_watch_list_by_name("test-name".to_string(), req_body)
+    .add_asset_to_watch_list_by_name("test-name", req_body)
     .await
   {
     Ok(watchlist) => {
@@ -630,10 +627,7 @@ async fn test_delete_watch_list_by_name_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client
-    .delete_watch_list_by_name("test-name".to_string())
-    .await
-  {
+  match api_client.delete_watch_list_by_name("test-name").await {
     Ok(_) => {
       endpoint_mock.assert();
     }
@@ -699,8 +693,8 @@ async fn test_delete_asset_from_watch_list_should_return_ok() {
 
   match api_client
     .delete_asset_from_watch_list(
-      Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
-      "META".to_string(),
+      &Uuid::from_str("3fa85f64-5717-4562-b3fc-2c963f66afa6").unwrap(),
+      "META",
     )
     .await
   {

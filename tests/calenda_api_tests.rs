@@ -52,19 +52,13 @@ async fn test_get_market_calendar_info_should_return_good_1() {
   };
 
   test_context
-    .setup_endpoint(
-      GET,
-      "/v2/calendar",
-      200,
-      response_body,
-      |client| async move {
-        match client.get_market_calendar_info(&parameter).await {
-          Ok(result) => {
-            assert_eq!(result.len(), 3)
-          }
-          Err(err) => panic!("API call failed: {:?}", err),
+    .setup_endpoint(GET, "/v2/calendar", 200, response_body, |client| async move {
+      match client.get_market_calendar_info(&parameter).await {
+        Ok(result) => {
+          assert_eq!(result.len(), 3)
         }
-      },
-    )
+        Err(err) => panic!("API call failed: {:?}", err),
+      }
+    })
     .await;
 }

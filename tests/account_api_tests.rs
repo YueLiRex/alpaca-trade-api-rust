@@ -19,11 +19,8 @@ async fn test_get_account_should_return_account() {
       .header("APCA-API-KEY-ID", "test_key")
       .header("APCA-API-SECRET-KEY", "test_secret")
       .path("/v2/account");
-    then
-      .status(200)
-      .header("Content-Type", "application/json")
-      .body(
-        r#"{
+    then.status(200).header("Content-Type", "application/json").body(
+      r#"{
             "id": "fff0e281-2a5a-4b97-8dcc-790a439a49b2",
             "admin_configurations": {},
             "user_configurations": null,
@@ -66,17 +63,14 @@ async fn test_get_account_should_return_account() {
             "intraday_adjustments": "0",
             "pending_reg_taf_fees": "0"
           }"#,
-      );
+    );
   });
 
   let base_url = server.base_url();
   let api = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
   match api.get_account().await {
     Ok(account) => {
-      assert_eq!(
-        account.id.to_string(),
-        "fff0e281-2a5a-4b97-8dcc-790a439a49b2"
-      );
+      assert_eq!(account.id.to_string(), "fff0e281-2a5a-4b97-8dcc-790a439a49b2");
       assert_eq!(account.cash.value(), 100000.0);
       assert_eq!(account.portfolio_value.value(), 100000.0);
     }
@@ -113,10 +107,7 @@ async fn test_get_account_should_return_clientside_error() {
     }
     Err(e) => {
       account_mock.assert();
-      assert_eq!(
-        e.to_string().as_str(),
-        "code: 404, message: \"Account not found\""
-      )
+      assert_eq!(e.to_string().as_str(), "code: 404, message: \"Account not found\"")
     }
   }
 }

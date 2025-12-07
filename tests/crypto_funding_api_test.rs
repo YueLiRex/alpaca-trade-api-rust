@@ -39,20 +39,14 @@ async fn test_get_all_crypto_funding_wallet_should_return_good() {
   };
 
   test_context
-    .setup_endpoint(
-      GET,
-      "/v2/wallets",
-      200,
-      response_body,
-      |client| async move {
-        match client.get_all_crypto_funding_wallet(&parameter).await {
-          Ok(wallet_info_list) => {
-            assert_eq!(wallet_info_list.len(), 2)
-          }
-          Err(error) => panic!("API call failed: {:?}", error),
+    .setup_endpoint(GET, "/v2/wallets", 200, response_body, |client| async move {
+      match client.get_all_crypto_funding_wallet(&parameter).await {
+        Ok(wallet_info_list) => {
+          assert_eq!(wallet_info_list.len(), 2)
         }
-      },
-    )
+        Err(error) => panic!("API call failed: {:?}", error),
+      }
+    })
     .await;
 }
 
@@ -97,20 +91,14 @@ async fn test_get_all_crypto_funding_transfer_should_return_good() {
     ]"#;
 
   test_context
-    .setup_endpoint(
-      GET,
-      "/v2/wallets/transfers",
-      200,
-      response_body,
-      |client| async move {
-        match client.get_all_crypto_funding_transfer().await {
-          Ok(transfer_info_list) => {
-            assert_eq!(transfer_info_list.len(), 2)
-          }
-          Err(error) => panic!("API call failed: {:?}", error),
+    .setup_endpoint(GET, "/v2/wallets/transfers", 200, response_body, |client| async move {
+      match client.get_all_crypto_funding_transfer().await {
+        Ok(transfer_info_list) => {
+          assert_eq!(transfer_info_list.len(), 2)
         }
-      },
-    )
+        Err(error) => panic!("API call failed: {:?}", error),
+      }
+    })
     .await;
 }
 

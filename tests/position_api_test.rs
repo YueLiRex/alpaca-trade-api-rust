@@ -320,11 +320,8 @@ async fn test_close_open_position_by_symbol_or_id_should_return_ok() {
 
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
-  let param = ClosePositionParam::Qty(3.8);
-  match api_client
-    .close_open_position_by_symbol_or_id("META", param)
-    .await
-  {
+  let param = &ClosePositionParam::Qty(3.8);
+  match api_client.close_open_position_by_symbol_or_id("META", param).await {
     Ok(positions) => {
       assert_eq!(
         positions.id,
@@ -357,10 +354,7 @@ async fn test_exercise_options_position_should_return_ok() {
   let base_url = ms.base_url();
   let api_client = Client::new(base_url, "test_key".to_string(), "test_secret".to_string());
 
-  match api_client
-    .exercise_option_contract_by_symbol_or_id("META")
-    .await
-  {
+  match api_client.exercise_option_contract_by_symbol_or_id("META").await {
     Ok(_) => {
       endpoint_mock.assert();
     }
