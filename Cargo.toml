@@ -1,6 +1,6 @@
 [package]
 name = "alpaca-trade-api-rust"
-version = "0.0.1"
+version = "0.0.3"
 edition = "2024"
 authors = ["Yue Li <li.yue.rex@gmail.com>"]
 description = "The Alpaca trading api client implement in Rust."
